@@ -1,0 +1,4 @@
+.vs/
+/CameraServer/bin/*
+/CameraServer/obj/*
+/CameraServer/Properties/launchSettings.json
