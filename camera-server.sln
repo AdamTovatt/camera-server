@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33424.131
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CameraServer", "CameraServer\CameraServer.csproj", "{93FCFC63-59C7-4410-872E-8DBFCE9E51B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CameraServer", "CameraServer\CameraServer.csproj", "{93FCFC63-59C7-4410-872E-8DBFCE9E51B3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CameraServerTests", "CameraServerTests\CameraServerTests.csproj", "{06AB314F-53B4-4637-BA1A-1C7C906DF2F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{93FCFC63-59C7-4410-872E-8DBFCE9E51B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{93FCFC63-59C7-4410-872E-8DBFCE9E51B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{93FCFC63-59C7-4410-872E-8DBFCE9E51B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06AB314F-53B4-4637-BA1A-1C7C906DF2F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06AB314F-53B4-4637-BA1A-1C7C906DF2F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06AB314F-53B4-4637-BA1A-1C7C906DF2F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06AB314F-53B4-4637-BA1A-1C7C906DF2F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
