@@ -11,7 +11,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="EmbeddedFiles\MockedCameraImage" />
+  </ItemGroup>
+
+  <ItemGroup>
     <_WebToolingArtifacts Remove="Properties\launchSettings_git.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="EmbeddedFiles\MockedCameraImage" />
   </ItemGroup>
 
   <ItemGroup>
