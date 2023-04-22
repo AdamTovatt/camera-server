@@ -1,4 +1,6 @@
 ﻿using CameraServer.Controllers;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +10,7 @@ using System.Threading.Tasks;
 namespace CameraServerTests.Tests
 {
     [TestClass]
-    internal class CameraControllerTests
+    public class CameraControllerTests
     {
         [TestMethod]
         public async Task Hello()
@@ -17,11 +19,12 @@ namespace CameraServerTests.Tests
             CameraController controller = new CameraController();
 
             // Act
-            var result = await controller.Hello();
+            ObjectResult result = await controller.Hello();
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.AreEqual("Hello World!", result);
+            Assert.IsNotNull(result.Value);
+            Assert.That.ObjectsHaveSameProperties(new { message = "Hello World!" }, result.Value);
         }
 
         [TestMethod]
