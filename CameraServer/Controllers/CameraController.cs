@@ -25,14 +25,7 @@ namespace CameraServer.Controllers
         }
 
         [HttpGet("image")]
-        public async Task<FileContentResult> getImage()
-        {
-            MockedImageProvider imageProvider = new MockedImageProvider();
-            return new FileContentResult(await imageProvider.GetImageBytes(), "image/jpeg");
-        }
-
-        [HttpGet("camera-image")]
-        public async Task<FileContentResult> GetCameraImage()
+        public async Task<FileContentResult> GetImage()
         {
             MockedImageProvider imageProvider = new MockedImageProvider();
             return new FileContentResult(await imageProvider.GetImageBytes(), "image/jpeg");
