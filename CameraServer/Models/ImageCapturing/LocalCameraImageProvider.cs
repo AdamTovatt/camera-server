@@ -1,6 +1,7 @@
 ﻿using MMALSharp.Common;
 using MMALSharp.Handlers;
 using MMALSharp;
+using OpenCvSharp;
 
 namespace CameraServer.Models.ImageCapturing
 {
@@ -8,6 +9,17 @@ namespace CameraServer.Models.ImageCapturing
     {
         public async Task<byte[]> GetImageBytes()
         {
+            FrameSource frameSource = Cv2.CreateFrameSource_Camera(0);
+
+            Mat mat = new Mat();
+
+            frameSource.NextFrame(mat);
+
+            await Task.CompletedTask;
+
+            return mat.ToBytes();
+
+            /*
             // Singleton initialized lazily. Reference once in your application.
             MMALCamera cam = MMALCamera.Instance;
 
@@ -20,7 +32,7 @@ namespace CameraServer.Models.ImageCapturing
                     throw new Exception("Working data is null");
                 
                 return imgCaptureHandler.WorkingData;
-            }
+            }*/
         }
     }
 }
