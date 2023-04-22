@@ -1,3 +1,4 @@
+using CameraServer.Models.ImageCapturing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sakur.WebApiUtilities.Models;
@@ -21,6 +22,13 @@ namespace CameraServer.Controllers
             {
                 return new ApiResponse(exception);
             }
+        }
+
+        [HttpGet("image")]
+        public async Task<FileContentResult> GetImage()
+        {
+            MockedImageProvider imageProvider = new MockedImageProvider();
+            return new FileContentResult(await imageProvider.GetImageBytes(), "image/jpeg");
         }
     }
 }
