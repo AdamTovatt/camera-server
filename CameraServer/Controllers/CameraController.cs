@@ -23,12 +23,12 @@ namespace CameraServer.Controllers
                 return new ApiResponse(exception);
             }
         }
+
         [HttpGet("image")]
         public async Task<FileContentResult> getImage()
         {
             MockedImageProvider imageProvider = new MockedImageProvider();
-            byte[] image = await imageProvider.GetImageBytes();
-            return new FileContentResult(image, "image/jpeg");
+            return new FileContentResult(await imageProvider.GetImageBytes(), "image/jpeg");
         }
     }
 }
