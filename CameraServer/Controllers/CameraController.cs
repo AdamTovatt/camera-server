@@ -37,5 +37,11 @@ namespace CameraServer.Controllers
             LocalCameraImageProvider imageProvider = new LocalCameraImageProvider();
             return CameraImage.GetResponse(await imageProvider.GetImage());
         }
+        
+        [HttpPost("provide-image")]
+        public async Task ProvideImage(byte[] image)
+        {
+            LocalCameraImageProvider imageProvider = new LocalCameraImageProvider();
+        }
     }
 }
