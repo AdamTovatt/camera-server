@@ -24,11 +24,26 @@ namespace CameraServer.Controllers
             }
         }
 
-        [HttpGet("image")]
+        [HttpGet("mocked-image")]
         public async Task<FileContentResult> GetImage()
         {
             MockedImageProvider imageProvider = new MockedImageProvider();
             return new FileContentResult(await imageProvider.GetImageBytes(), "image/jpeg");
+        }
+
+        [HttpGet("image")]
+        public async Task<FileContentResult> GetCameraImage()
+        {
+            LocalCameraImageProvider imageProvider = new LocalCameraImageProvider();
+            return new FileContentResult(await imageProvider.GetImageBytes(), "image/jpeg");
+        }
+
+        [HttpGet("image-raw")]
+        public async Task<IActionResult> GetRawImage()
+        {
+            LocalCameraImageProvider imageProvider = new LocalCameraImageProvider();
+            byte[] imageRaw = await imageProvider.GetImageBytes();
+            return File(imageRaw, "application/octet-stream");
         }
     }
 }
