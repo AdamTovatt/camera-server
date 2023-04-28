@@ -4,8 +4,7 @@ namespace CameraServer.Helpers
 {
     public interface IImageCache
     {
-        public IImageProvider GetImageProvider(string providerId);
         public IImageProvider AddImageProvider(string providerId);
-        public bool ContainsImageProvider(string providerId);
+        public bool TryGetImagProvider(string providerId, out IImageProvider provider);
     }
 }

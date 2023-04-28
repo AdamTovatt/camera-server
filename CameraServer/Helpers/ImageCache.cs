@@ -2,19 +2,14 @@
 
 namespace CameraServer.Helpers
 {
-    public class MockedImageCache : IImageCache
+    public class ImageCache : IImageCache
     {
         public IImageProvider AddImageProvider(string providerId)
         {
             throw new NotImplementedException();
         }
 
-        public bool ContainsImageProvider(string providerId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IImageProvider GetImageProvider(string providerId)
+        public bool TryGetImagProvider(string providerId, out IImageProvider provider)
         {
             throw new NotImplementedException();
         }
