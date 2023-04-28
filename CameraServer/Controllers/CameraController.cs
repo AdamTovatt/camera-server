@@ -1,3 +1,4 @@
+using CameraServer.Helpers;
 using CameraServer.Helpers.ImageProviding;
 using CameraServer.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,8 @@ namespace CameraServer.Controllers
     [Route("[controller]")]
     public class CameraController : ControllerBase
     {
+        public image_cache _cache = new image_cache();
+
         [HttpGet("hello")]
         public async Task<ObjectResult> Hello()
         {
@@ -38,10 +41,19 @@ namespace CameraServer.Controllers
             return CameraImage.GetResponse(await imageProvider.GetImage());
         }
         
-        [HttpPost("provide-image")]
-        public async Task ProvideImage(byte[] image)
+        [HttpPost("updated-image")]
+        public async Task UpdatedImage(byte[] image, int cameraId)
         {
-            LocalCameraImageProvider imageProvider = new LocalCameraImageProvider();
+            image_provider imageNew = new();
+            imageNew.UpdateImage(image);
+            _cache.AddImage(cameraId, imageNew);
+        }
+
+        [HttpGet("get-image")]
+        public async Task<FileContentResult> UpdatedImage( int cameraId)
+        {
+            image_provider newImage = _cache.GetImage(cameraId);
+            return newImage.FileContentResultImage();
         }
     }
 }
