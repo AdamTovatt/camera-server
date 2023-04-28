@@ -1,21 +1,22 @@
-﻿using OpenCvSharp;
+﻿using CameraServer.Models;
+using OpenCvSharp;
 
-namespace CameraServer.Models.ImageCapturing
+namespace CameraServer.Helpers.ImageProviding
 {
     public class LocalCameraImageProvider : IImageProvider
     {
         private static FrameSource? frameSource = null;
         private static Mat? mat = null;
 
-        public async Task<byte[]> GetImageBytes()
+        public async Task<CameraImage> GetImage()
         {
             if (frameSource == null)
                 frameSource = Cv2.CreateFrameSource_Camera(0);
-            if(mat == null)
+            if (mat == null)
                 mat = new Mat();
 
             await Task.Run(() => { frameSource.NextFrame(mat); });
-            return mat.ToBytes();
+            return new CameraImage(mat.ToBytes());
         }
     }
 }

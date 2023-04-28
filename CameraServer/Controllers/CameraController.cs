@@ -1,5 +1,5 @@
-using CameraServer.Models.ImageCapturing;
-using Microsoft.AspNetCore.Authorization;
+using CameraServer.Helpers.ImageProviding;
+using CameraServer.Models;
 using Microsoft.AspNetCore.Mvc;
 using Sakur.WebApiUtilities.Models;
 using System.Net;
@@ -28,22 +28,14 @@ namespace CameraServer.Controllers
         public async Task<FileContentResult> GetImage()
         {
             MockedImageProvider imageProvider = new MockedImageProvider();
-            return new FileContentResult(await imageProvider.GetImageBytes(), "image/jpeg");
+            return CameraImage.GetResponse(await imageProvider.GetImage());
         }
 
         [HttpGet("image")]
         public async Task<FileContentResult> GetCameraImage()
         {
             LocalCameraImageProvider imageProvider = new LocalCameraImageProvider();
-            return new FileContentResult(await imageProvider.GetImageBytes(), "image/jpeg");
-        }
-
-        [HttpGet("image-raw")]
-        public async Task<IActionResult> GetRawImage()
-        {
-            LocalCameraImageProvider imageProvider = new LocalCameraImageProvider();
-            byte[] imageRaw = await imageProvider.GetImageBytes();
-            return File(imageRaw, "application/octet-stream");
+            return CameraImage.GetResponse(await imageProvider.GetImage());
         }
     }
 }
