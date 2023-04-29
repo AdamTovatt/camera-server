@@ -19,9 +19,9 @@ namespace CameraServer.Models
             TimeOfCapture = DateTime.Now;
         }
 
-        public static FileContentResult GetResponse(CameraImage image)
+        public FileContentResult ToResponse()
         {
-            return new FileContentResult(image.Bytes, "image/jpeg");
+            return new FileContentResult(Bytes, "image/jpeg");
         }
     }
 }

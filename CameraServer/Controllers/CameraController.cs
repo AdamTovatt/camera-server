@@ -11,7 +11,7 @@ namespace CameraServer.Controllers
     [Route("[controller]")]
     public class CameraController : ControllerBase
     {
-        private CameraContainer container = new CameraContainer();
+        private static CameraContainer container = new CameraContainer();
 
         [HttpGet("hello")]
         public async Task<ObjectResult> Hello()
@@ -31,29 +31,27 @@ namespace CameraServer.Controllers
         public async Task<FileContentResult> GetImage()
         {
             MockedImageProvider imageProvider = new MockedImageProvider();
-            return CameraImage.GetResponse(await imageProvider.GetImage());
+            return (await imageProvider.GetImage()).ToResponse();
         }
 
         [HttpGet("image")]
         public async Task<FileContentResult> GetCameraImage()
         {
             LocalCameraImageProvider imageProvider = new LocalCameraImageProvider();
-            return CameraImage.GetResponse(await imageProvider.GetImage());
+            return (await imageProvider.GetImage()).ToResponse();
         }
 
         [HttpPost("update-image")]
         public async void UpdateCameraImage(byte[] image, int cameraId)
         {
-            Camera camera = new Camera();
-            await camera.UpdateImage(image);
-            container.AddImage(cameraId, camera);
+            await container.SetImage(cameraId, image);
         }
 
         [HttpGet("get-image")]
         public async Task<FileContentResult> GetCameraImage(int cameraId)
         {
             ICamera camera = await container.GetImage(cameraId);
-            return await camera.FileContentResultImage();
+            return (await camera.GetImage()).ToResponse();
         }
     }
 }

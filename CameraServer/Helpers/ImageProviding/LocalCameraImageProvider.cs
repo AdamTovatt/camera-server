@@ -9,11 +9,6 @@ namespace CameraServer.Helpers.ImageProviding
         private static FrameSource? frameSource = null;
         private static Mat? mat = null;
 
-        public Task<FileContentResult> FileContentResultImage()
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<CameraImage> GetImage()
         {
             if (frameSource == null)
@@ -25,7 +20,7 @@ namespace CameraServer.Helpers.ImageProviding
             return new CameraImage(mat.ToBytes());
         }
 
-        public Task UpdateImage(byte[] image)
+        public Task SetImage(byte[] image)
         {
             throw new NotImplementedException();
         }
