@@ -45,7 +45,7 @@ namespace CameraServer.Controllers
         public async void UpdatedImage(byte[] image, int cameraId)
         {
             Camera imageNew = new Camera();
-            imageNew.UpdateImage(image);
+            await imageNew.UpdateImage(image);
             cache.AddImage(cameraId, imageNew);
             await Task.CompletedTask;
         }

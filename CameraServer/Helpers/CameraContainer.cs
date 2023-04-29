@@ -2,11 +2,11 @@
 
 namespace CameraServer.Helpers
 {
-    public class ImageCache
+    public class CameraContainer
     {
-        private Dictionary<int, IImageProvider> cache = new Dictionary<int, IImageProvider>();
+        private Dictionary<int, ICamera> cache = new Dictionary<int, ICamera>();
 
-        public async void AddImage(int id, ImageProvider provider)
+        public async void AddImage(int id, Camera provider)
         {
             if(cache.ContainsKey(id))
             {
@@ -18,7 +18,7 @@ namespace CameraServer.Helpers
             await Task.CompletedTask;
         }
 
-        public async Task<IImageProvider> GetImage(int id) 
+        public async Task<ICamera> GetImage(int id) 
         {   
             await Task.CompletedTask;
             return cache[id];
