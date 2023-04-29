@@ -11,7 +11,7 @@ namespace CameraServer.Controllers
     [Route("[controller]")]
     public class CameraController : ControllerBase
     {
-        public image_cache _cache = new image_cache();
+        private CameraContainer cache = new CameraContainer();
 
         [HttpGet("hello")]
         public async Task<ObjectResult> Hello()
@@ -42,18 +42,19 @@ namespace CameraServer.Controllers
         }
         
         [HttpPost("updated-image")]
-        public async Task UpdatedImage(byte[] image, int cameraId)
+        public async void UpdatedImage(byte[] image, int cameraId)
         {
-            image_provider imageNew = new();
+            Camera imageNew = new Camera();
             imageNew.UpdateImage(image);
-            _cache.AddImage(cameraId, imageNew);
+            cache.AddImage(cameraId, imageNew);
+            await Task.CompletedTask;
         }
 
         [HttpGet("get-image")]
-        public async Task<FileContentResult> UpdatedImage( int cameraId)
+        public  async Task<FileContentResult> GetCameraImage( int cameraId)
         {
-            image_provider newImage = _cache.GetImage(cameraId);
-            return newImage.FileContentResultImage();
+            ICamera newImage = await cache.GetImage(cameraId);
+            return await newImage.FileContentResultImage();
         }
     }
 }

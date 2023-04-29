@@ -3,7 +3,7 @@ using OpenCvSharp;
 
 namespace CameraServer.Helpers.ImageProviding
 {
-    public class LocalCameraImageProvider : IImageProvider
+    public class LocalCameraImageProvider : ICamera
     {
         private static FrameSource? frameSource = null;
         private static Mat? mat = null;

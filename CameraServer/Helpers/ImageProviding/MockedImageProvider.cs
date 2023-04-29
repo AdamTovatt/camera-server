@@ -2,7 +2,7 @@
 
 namespace CameraServer.Helpers.ImageProviding
 {
-    public class MockedImageProvider : IImageProvider
+    public class MockedImageProvider : ICamera
     {
         public async Task<CameraImage> GetImage()
         {
