@@ -42,19 +42,19 @@ namespace CameraServer.Controllers
         }
         
         [HttpPost("updated-image")]
-        public async void UpdatedImage(byte[] image, int cameraId)
+        public async void UpdatedCameraImage(byte[] image, int cameraId)
         {
-            Camera imageNew = new Camera();
-            await imageNew.UpdateImage(image);
-            cache.AddImage(cameraId, imageNew);
+            Camera camera = new Camera();
+            await camera.UpdateImage(image);
+            cache.AddImage(cameraId, camera);
             await Task.CompletedTask;
         }
 
         [HttpGet("get-image")]
         public  async Task<FileContentResult> GetCameraImage( int cameraId)
         {
-            ICamera newImage = await cache.GetImage(cameraId);
-            return await newImage.FileContentResultImage();
+            ICamera camera = await cache.GetImage(cameraId);
+            return await camera.FileContentResultImage();
         }
     }
 }
