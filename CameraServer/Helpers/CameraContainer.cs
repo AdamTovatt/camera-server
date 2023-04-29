@@ -4,24 +4,28 @@ namespace CameraServer.Helpers
 {
     public class CameraContainer
     {
-        private Dictionary<int, ICamera> Cache = new Dictionary<int, ICamera>();
+        private Dictionary<int, ICamera> container = new Dictionary<int, ICamera>();
 
         public async void AddImage(int id, Camera provider)
         {
-            if(Cache.ContainsKey(id))
-            {
-                Cache[id] = provider;
-            }
+            if (container.ContainsKey(id))
+                container[id] = provider;
 
             else
-                Cache.Add(id, provider);
+                container.Add(id, provider);
             await Task.CompletedTask;
         }
 
-        public async Task<ICamera> GetImage(int id) 
-        {   
+        public async Task<ICamera> GetImage(int id)
+        {
             await Task.CompletedTask;
-            return Cache[id];
+            return container[id];
+        }
+
+        public async Task<bool> ContainsKey(int id)
+        {
+            await Task.CompletedTask;
+            return container.ContainsKey(id);
         }
     }
 }

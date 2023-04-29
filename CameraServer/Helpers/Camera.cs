@@ -8,11 +8,11 @@ namespace CameraServer.Helpers
 {
     public class Camera : ICamera
     {
-        CameraImage? CameraImage { get; set; }
+        private CameraImage? CameraImage { get; set; }
 
-        public async Task UpdateImage(byte[] image ) 
+        public async Task UpdateImage(byte[] image)
         {
-            this.CameraImage = new CameraImage( image, new DateTime() );
+            this.CameraImage = new CameraImage(image, new DateTime());
             await Task.CompletedTask;
         }
 
@@ -20,6 +20,7 @@ namespace CameraServer.Helpers
         {
             if (CameraImage == null)
                 throw new Exception("no image available");
+
             await Task.CompletedTask;
             return CameraImage.GetResponse(CameraImage);
         }
