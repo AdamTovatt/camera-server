@@ -41,9 +41,21 @@ namespace CameraServer.Controllers
         }
 
         [HttpPost("update-image")]
-        public async void UpdateCameraImage(byte[] image, int cameraId)
+        public async Task<ObjectResult> UpdateCameraImage([FromForm] IFormFile image, [FromForm] int cameraId)
         {
-            await CameraContainer.Instance.SetImage(cameraId, image);
+            if (cameraId < 1)
+                return new ApiResponse("Invalid id in FormData", HttpStatusCode.BadRequest);
+
+            using (Stream stream = image.OpenReadStream())
+            {
+                using (MemoryStream memoryStream = new MemoryStream((int)stream.Length))
+                {
+                    await stream.CopyToAsync(memoryStream);
+                    await CameraContainer.Instance.SetImage(cameraId, memoryStream.ToArray());
+                }
+            }
+
+            return new ApiResponse();
         }
 
         [HttpGet("get-image")]
