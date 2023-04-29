@@ -1,4 +1,5 @@
 ﻿using CameraServer.Models;
+using Microsoft.AspNetCore.Mvc;
 using OpenCvSharp;
 
 namespace CameraServer.Helpers.ImageProviding
@@ -7,6 +8,11 @@ namespace CameraServer.Helpers.ImageProviding
     {
         private static FrameSource? frameSource = null;
         private static Mat? mat = null;
+
+        public Task<FileContentResult> FileContentResultImage()
+        {
+            throw new NotImplementedException();
+        }
 
         public async Task<CameraImage> GetImage()
         {
@@ -17,6 +23,11 @@ namespace CameraServer.Helpers.ImageProviding
 
             await Task.Run(() => { frameSource.NextFrame(mat); });
             return new CameraImage(mat.ToBytes());
+        }
+
+        public Task UpdateImage(byte[] image)
+        {
+            throw new NotImplementedException();
         }
     }
 }
