@@ -3,6 +3,7 @@ import requests
 import numpy as np
 import signal
 import sys
+import time as time
 
 # Define the URL of the endpoint where you want to send the image
 url = 'http://localhost:5018/camera/update-image'
@@ -45,5 +46,4 @@ while True:
     except:
         print('Error sending image to server')
 
-    # Delay for 1 second before capturing the next image
-    cv2.waitKey(500)
+    time.sleep(0.5)
