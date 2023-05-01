@@ -82,8 +82,9 @@ namespace CameraServerTests.Tests
                 Assert.AreEqual(200, result1.StatusCode);
                 Assert.AreEqual(200, result2.StatusCode);
             }
-t
+
             Assert.AreEqual(2, CameraContainer.Instance.CameraCount);
+            Assert.AreEqual("image/jpeg", imageFromController.ContentType);
             Assert.AreEqual(239172, (await (await CameraContainer.Instance.GetCameraAsync(1)).GetImageAsync()).Bytes.Length);
             Assert.AreEqual(239172, (await (await CameraContainer.Instance.GetCameraAsync(2)).GetImageAsync()).Bytes.Length);
         }
