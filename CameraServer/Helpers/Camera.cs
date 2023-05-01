@@ -9,9 +9,9 @@ namespace CameraServer.Helpers
     {
         private CameraImage? CurrentImage { get; set; }
 
-        public async Task SetImage(byte[] image)
+        public async Task SetImage(CameraImage image)
         {
-            CurrentImage = new CameraImage(image, new DateTime());
+            CurrentImage = image;
             await Task.CompletedTask;
         }
 

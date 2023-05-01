@@ -51,7 +51,7 @@ namespace CameraServer.Controllers
                 using (MemoryStream memoryStream = new MemoryStream((int)stream.Length))
                 {
                     await stream.CopyToAsync(memoryStream);
-                    await CameraContainer.Instance.SetImage(cameraId, memoryStream.ToArray());
+                    await CameraContainer.Instance.SetImage(cameraId , new CameraImage(memoryStream.ToArray()));
                 }
             }
 

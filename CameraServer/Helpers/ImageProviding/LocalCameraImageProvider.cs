@@ -20,7 +20,7 @@ namespace CameraServer.Helpers.ImageProviding
             return new CameraImage(mat.ToBytes());
         }
 
-        public Task SetImage(byte[] image)
+        public Task SetImage(CameraImage image)
         {
             throw new NotImplementedException();
         }

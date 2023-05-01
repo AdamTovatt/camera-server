@@ -1,4 +1,5 @@
 ﻿using CameraServer.Helpers.ImageProviding;
+using CameraServer.Models;
 
 namespace CameraServer.Helpers
 {
@@ -36,7 +37,7 @@ namespace CameraServer.Helpers
             return container!.ContainsKey(id);
         }
 
-        public async Task SetImage(int id, byte[] image)
+        public async Task SetImage(int id, CameraImage image)
         {
             if (container!.TryGetValue(id, out ICamera? camera))
             {

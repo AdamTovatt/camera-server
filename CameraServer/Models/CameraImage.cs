@@ -16,7 +16,7 @@ namespace CameraServer.Models
         public CameraImage(byte[] bytes)
         {
             Bytes = bytes;
-            TimeOfCapture = DateTime.Now;
+            TimeOfCapture = DateTime.UtcNow;
         }
 
         public FileContentResult ToResponse()
