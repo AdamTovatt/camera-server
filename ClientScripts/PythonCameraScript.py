@@ -5,7 +5,7 @@ import signal
 import sys
 
 # Define the URL of the endpoint where you want to send the image
-url = 'http://localhost:5018/camera-server/camera/image'
+url = 'http://localhost:5018/camera/update-image'
 
 # Define the ID of the camera
 camera_id = 1
@@ -33,7 +33,6 @@ while True:
 
     # Convert the image to a JPEG-encoded bytes object
     _, img_encoded = cv2.imencode('.jpg', frame)
-    headers = {'Content-Type': 'multipart/form-data'}
 
     # Create a dictionary to hold the request data
     data = {'cameraId': camera_id}
@@ -42,7 +41,8 @@ while True:
     files = {'image': ('image.jpg', img_encoded.tobytes(), 'image/jpeg')}
 
     # Send the image and camera ID to the endpoint using a POST request
-    response = requests.post(url, headers=headers, data=data, files=files)
+    response = requests.post(url,
+                             data=data, files=files, verify=False)
 
     # Print the response from the server
     print(response.text)
