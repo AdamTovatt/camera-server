@@ -1,4 +1,5 @@
 ﻿using CameraServer.Controllers;
+using CameraServer.Helpers;
 using CameraServer.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -45,7 +46,7 @@ namespace CameraServerTests.Tests
         }
 
         [TestMethod]
-        public async Task AssertUpdateCameraImageUpploadsCorrectToDictionary()
+        public async Task AssertUpdateAndGetCameraImageCorrect()
         {
             // Arrange
             CameraController controller = new CameraController();
@@ -57,11 +58,20 @@ namespace CameraServerTests.Tests
             IFormFile image = TestUtilities.GetIFormFile(stream);
 
             // Act
-            ObjectResult result = await controller.UpdateCameraImage(image, 0);
-            FileContentResult imageFromController = await controller.GetCameraImage(0);
+            await controller.UpdateCameraImage(image, 1);
+            FileContentResult imageFromController = await controller.GetCameraImage(1);
 
             // Assert
-            Assert.Equals(image, imageFromController.FileContents);
+            Assert.AreEqual(239172, imageFromController.FileContents.Length);
+            Assert.AreEqual("image/jpeg", imageFromController.ContentType);
+
+            // Act2
+            await controller.UpdateCameraImage(image, 2);
+            FileContentResult imageFromController2 = await controller.GetCameraImage(2);
+
+            // Assert
+            Assert.AreEqual(239172, imageFromController2.FileContents.Length);
+            Assert.AreEqual("image/jpeg", imageFromController2.ContentType);
         }
     }
 }
