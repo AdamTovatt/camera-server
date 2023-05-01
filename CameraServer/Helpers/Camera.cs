@@ -7,7 +7,7 @@ namespace CameraServer.Helpers
 {
     public class Camera : ICamera
     {
-        private CameraImage? CurrentImage { get; set; }
+        private CameraImage? CurrentImage;
 
         public async Task SetImage(CameraImage image)
         {

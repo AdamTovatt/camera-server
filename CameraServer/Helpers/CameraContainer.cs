@@ -19,7 +19,7 @@ namespace CameraServer.Helpers
             }
         }
 
-        public CameraContainer() 
+        public CameraContainer()
         {
             if (container == null)
                 container = new Dictionary<int, ICamera>();

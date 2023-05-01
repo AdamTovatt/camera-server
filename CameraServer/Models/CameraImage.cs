@@ -18,6 +18,7 @@ namespace CameraServer.Models
             Bytes = bytes;
             TimeOfCapture = DateTime.UtcNow;
         }
+
         public CameraImage(MemoryStream bytes)
         {
             Bytes = bytes.ToArray();
