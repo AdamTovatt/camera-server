@@ -59,8 +59,11 @@ namespace CameraServer.Controllers
         }
 
         [HttpGet("get-image")]
-        public async Task<FileContentResult> GetCameraImage(int cameraId)
+        public async Task<IActionResult> GetCameraImage(int cameraId)
         {
+            //if (cameraId < 1 && !await CameraContainer.Instance.ContainsKey(cameraId))
+                //return new FileContentResult();
+
             ICamera camera = await CameraContainer.Instance.GetCameraAsync(cameraId);
             return (await camera.GetImageAsync()).ToResponse();
         }
