@@ -11,7 +11,7 @@ namespace CameraServer.Helpers.ImageProviding
             return new CameraImage(await EmbeddedResourceHelper.ReadResource("MockedCameraImage"));
         }
 
-        public Task SetImage(byte[] image)
+        public Task SetImage(CameraImage image)
         {
             throw new NotImplementedException();
         }
