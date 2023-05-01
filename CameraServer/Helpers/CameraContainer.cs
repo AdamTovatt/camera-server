@@ -24,7 +24,7 @@ namespace CameraServer.Helpers
                 container = new Dictionary<int, ICamera>();
         }
 
-        public async Task<ICamera> GetImage(int id)
+        public async Task<ICamera> GetCamera(int id)
         {
             await Task.CompletedTask;
             return container![id];
