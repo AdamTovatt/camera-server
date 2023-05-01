@@ -22,8 +22,8 @@ namespace CameraServerTests.Tests
             await CameraContainer.Instance.SetImage(1, image);
 
             // Assert
-            Assert.AreEqual(239172, (await (await CameraContainer.Instance.GetCameraAsync(1)).GetImageAsync()).Bytes.Length);
             Assert.AreEqual(1, CameraContainer.Instance.CameraCount);
+            Assert.AreEqual(239172, (await (await CameraContainer.Instance.GetCameraAsync(1)).GetImageAsync()).Bytes.Length);
 
             // Act
             await CameraContainer.Instance.SetImage(2, image);
