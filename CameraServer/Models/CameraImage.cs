@@ -16,12 +16,18 @@ namespace CameraServer.Models
         public CameraImage(byte[] bytes)
         {
             Bytes = bytes;
-            TimeOfCapture = DateTime.Now;
+            TimeOfCapture = DateTime.UtcNow;
         }
 
-        public static FileContentResult GetResponse(CameraImage image)
+        public CameraImage(MemoryStream bytes)
         {
-            return new FileContentResult(image.Bytes, "image/jpeg");
+            Bytes = bytes.ToArray();
+            TimeOfCapture = DateTime.UtcNow;
+        }
+
+        public FileContentResult ToResponse()
+        {
+            return new FileContentResult(Bytes, "image/jpeg");
         }
     }
 }

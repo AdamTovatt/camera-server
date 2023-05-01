@@ -22,7 +22,7 @@ namespace CameraServer.Helpers
                 if (stream == null)
                     throw new FileNotFoundException($"Could not find the resource with the full resource name: {fullResourceName}");
 
-                using(MemoryStream memoryStream = new MemoryStream())
+                using (MemoryStream memoryStream = new MemoryStream())
                 {
                     await stream.CopyToAsync(memoryStream);
                     return memoryStream.ToArray();
