@@ -27,8 +27,6 @@ def signal_handler(sig, frame):
 signal.signal(signal.SIGTERM, signal_handler)
 
 while True:
-    # Capture an image from the camera
-
     ret, frame = cap.read()
 
     # Convert the image to a JPEG-encoded bytes object
@@ -41,14 +39,11 @@ while True:
     files = {'image': ('image.jpg', img_encoded.tobytes(), 'image/jpeg')}
 
     # Send the image and camera ID to the endpoint using a POST request
-    response = requests.post(url,
-                             data=data, files=files, verify=False)
-
-    # Print the response from the server
-    print(response.text)
+    try:
+        response = requests.post(url, data=data, files=files, verify=False)
+        print(response.text)
+    except:
+        print('Error sending image to server')
 
     # Delay for 1 second before capturing the next image
-    cv2.waitKey(1000)
-
-cap.release()
-cv2.destroyAllWindows()
+    cv2.waitKey(500)
