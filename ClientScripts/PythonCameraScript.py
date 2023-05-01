@@ -5,10 +5,10 @@ import signal
 import sys
 
 # Define the URL of the endpoint where you want to send the image
-url = 'http://example.com/upload_image'
+url = 'http://localhost:5018/camera-server/camera/image'
 
 # Define the ID of the camera
-camera_id = 'camera1'
+camera_id = 1
 
 # Set up the camera
 cap = cv2.VideoCapture(0)
@@ -36,7 +36,7 @@ while True:
     headers = {'Content-Type': 'multipart/form-data'}
 
     # Create a dictionary to hold the request data
-    data = {'camera_id': camera_id}
+    data = {'cameraId': camera_id}
 
     # Add the image data to the request data
     files = {'image': ('image.jpg', img_encoded.tobytes(), 'image/jpeg')}
