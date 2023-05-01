@@ -46,11 +46,11 @@ namespace CameraServerTests.Tests
         }
 
         [TestMethod]
-        public async Task AssertUpdateCameraImageCorrect()
+        public async Task AssertGetCameraImageCorrect()
         {
             // Arrange
             CameraController controller = new CameraController();
-            using MemoryStream? stream = await TestUtilities.GetTestFileAsync("MockedCameraImage");
+            using (MemoryStream? stream = await TestUtilities.GetTestFileAsync("MockedCameraImage"))
             {
                 if (stream == null)
                     Assert.Fail("Could not load MockedCameraImage");
@@ -78,11 +78,11 @@ namespace CameraServerTests.Tests
             Assert.AreEqual(239172, (await (await CameraContainer.Instance.GetCameraAsync(2)).GetImageAsync()).Bytes.Length);
         }
 
-        public async Task AssertGetCameraImageCorrect()
+        public async Task AssertUpdateCameraImageCorrect()
         {
             // Arrange
             CameraController controller = new CameraController();
-            using MemoryStream? stream = await TestUtilities.GetTestFileAsync("MockedCameraImage");
+            using (MemoryStream? stream = await TestUtilities.GetTestFileAsync("MockedCameraImage"))
             {
                 if (stream == null)
                     Assert.Fail("Could not load MockedCameraImage");
