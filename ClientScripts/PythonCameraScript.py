@@ -11,7 +11,7 @@ url = 'http://localhost:5018/camera/update-image'
 camera_id = 1
 
 # Set up the camera
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
 # Define a signal handler for SIGTERM
 
