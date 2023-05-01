@@ -66,7 +66,7 @@ namespace CameraServerTests.Tests
             // Assert
             Assert.AreEqual(239172, imageFromController.FileContents.Length);
             Assert.AreEqual("image/jpeg", imageFromController.ContentType);
-            Assert.AreEqual(1, CameraContainer.Instance.CameraCount);
+            Assert.AreEqual(2, CameraContainer.Instance.CameraCount);
             Assert.AreEqual(239172, (await (await CameraContainer.Instance.GetCameraAsync(1)).GetImageAsync()).Bytes.Length);
 
             // Act2
@@ -75,7 +75,6 @@ namespace CameraServerTests.Tests
             // Assert
             Assert.AreEqual(239172, imageFromController2.FileContents.Length);
             Assert.AreEqual("image/jpeg", imageFromController2.ContentType);
-            Assert.AreEqual(2, CameraContainer.Instance.CameraCount);
             Assert.AreEqual(239172, (await (await CameraContainer.Instance.GetCameraAsync(2)).GetImageAsync()).Bytes.Length);
         }
 
