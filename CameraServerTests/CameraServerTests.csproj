@@ -10,10 +10,12 @@
 
   <ItemGroup>
     <None Remove="Data\MockedCameraImage" />
+    <None Remove="Data\MockedCameraImage2" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Data\MockedCameraImage" />
+    <EmbeddedResource Include="Data\MockedCameraImage2" />
   </ItemGroup>
 
   <ItemGroup>

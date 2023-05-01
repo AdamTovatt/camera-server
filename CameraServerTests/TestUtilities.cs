@@ -36,5 +36,31 @@ namespace CameraServerTests
         {
             return new FormFile(stream, 0, stream.Length, "file", "testImage.png");
         }
+
+        public static async Task<byte[]> ReadResource(string resourceName)
+        {
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            string fullResourceName = GetFullResourceName(resourceName, assembly);
+
+            using (Stream? stream = assembly.GetManifestResourceStream(fullResourceName))
+            {
+                if (stream == null)
+                    throw new FileNotFoundException($"Could not find the resource with the full resource name: {fullResourceName}");
+
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    await stream.CopyToAsync(memoryStream);
+                    return memoryStream.ToArray();
+                }
+            }
+        }
+
+        public static string GetFullResourceName(string resourceName, Assembly? assembly = null)
+        {
+            if (assembly == null)
+                assembly = Assembly.GetExecutingAssembly();
+
+            return assembly.GetManifestResourceNames().Single(str => str.EndsWith(resourceName));
+        }
     }
 }
