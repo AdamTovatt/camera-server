@@ -9,6 +9,8 @@ namespace CameraServer.Helpers
 
         private static CameraContainer? _instance;
 
+        public int CameraCount { get { return  container?.Count ?? 0; } }
+
         public static CameraContainer Instance
         {
             get
@@ -25,7 +27,7 @@ namespace CameraServer.Helpers
                 container = new Dictionary<int, ICamera>();
         }
 
-        public async Task<ICamera> GetCamera(int id)
+        public async Task<ICamera> GetCameraAsync(int id)
         {
             await Task.CompletedTask;
             return container![id];

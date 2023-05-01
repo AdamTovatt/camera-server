@@ -15,7 +15,7 @@ namespace CameraServer.Helpers
             await Task.CompletedTask;
         }
 
-        public async Task<CameraImage> GetImage()
+        public async Task<CameraImage> GetImageAsync()
         {
             if (CurrentImage == null)
                 throw new Exception("no image available");

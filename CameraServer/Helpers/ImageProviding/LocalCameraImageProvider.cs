@@ -9,7 +9,7 @@ namespace CameraServer.Helpers.ImageProviding
         private static FrameSource? frameSource = null;
         private static Mat? mat = null;
 
-        public async Task<CameraImage> GetImage()
+        public async Task<CameraImage> GetImageAsync()
         {
             if (frameSource == null)
                 frameSource = Cv2.CreateFrameSource_Camera(0);

@@ -6,7 +6,7 @@ namespace CameraServer.Helpers.ImageProviding
     public class MockedImageProvider : ICamera
     {
 
-        public async Task<CameraImage> GetImage()
+        public async Task<CameraImage> GetImageAsync()
         {
             return new CameraImage(await EmbeddedResourceHelper.ReadResource("MockedCameraImage"));
         }

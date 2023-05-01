@@ -30,14 +30,14 @@ namespace CameraServer.Controllers
         public async Task<FileContentResult> GetImage()
         {
             MockedImageProvider imageProvider = new MockedImageProvider();
-            return (await imageProvider.GetImage()).ToResponse();
+            return (await imageProvider.GetImageAsync()).ToResponse();
         }
 
         [HttpGet("image")]
         public async Task<FileContentResult> GetCameraImage()
         {
             LocalCameraImageProvider imageProvider = new LocalCameraImageProvider();
-            return (await imageProvider.GetImage()).ToResponse();
+            return (await imageProvider.GetImageAsync()).ToResponse();
         }
 
         [HttpPost("update-image")]
@@ -61,8 +61,8 @@ namespace CameraServer.Controllers
         [HttpGet("get-image")]
         public async Task<FileContentResult> GetCameraImage(int cameraId)
         {
-            ICamera camera = await CameraContainer.Instance.GetCamera(cameraId);
-            return (await camera.GetImage()).ToResponse();
+            ICamera camera = await CameraContainer.Instance.GetCameraAsync(cameraId);
+            return (await camera.GetImageAsync()).ToResponse();
         }
     }
 }
