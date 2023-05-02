@@ -4,3 +4,4 @@
 /CameraServerTests/bin/*
 /CameraServerTests/obj/*
 /CameraServer/Properties/launchSettings.json
+/ClientScripts/camera-config.txt

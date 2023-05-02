@@ -15,16 +15,22 @@ try:
         url = lines[0].strip()
         camera_id = int(lines[1].strip())
         hardware_id = int(lines[2].strip())
-except:
-    print('Error reading config file.')
+except FileNotFoundError:
+    print('Error! No config file found.')
     print('Should be a config file called camera-config.txt in the same directory as this script.')
     print('The config file should have the url on the first line, the camera ID on the second line and the hardware ID on the third line.')
     print("The url is the url of the endpoint that the image will be sent to.")
     print('The camera ID is the ID of the camera that will be sent with the image, it represents what camera this is, at what place it is, whose camera it is.')
     print('The hardware ID is what camera the program will use to capture the image, should probably be 0 for most devices, 1 for the radxa rock pi.')
     sys.exit(0)
+except PermissionError:
+    print('Error! No permission to read config file.')
+    sys.exit(0)
+except:
+    print('Unknown error reading config file.')
+    sys.exit(0)
 
-# the radxa rock pi seems to need to use id 1
+    # the radxa rock pi seems to need to use id 1
 cap = cv2.VideoCapture(hardware_id)
 
 
