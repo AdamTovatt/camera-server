@@ -5,38 +5,32 @@ import signal
 import sys
 import time as time
 
-# Define the URL of the endpoint where you want to send the image
+# url of the endpoint to send the image to
 url = 'http://localhost:5018/camera/update-image'
 
-# Define the ID of the camera
-camera_id = 1
+camera_id = 1  # id of the camera, sent to the server with the image
 
-# Set up the camera
-cap = cv2.VideoCapture(1)
-
-# Define a signal handler for SIGTERM
+cap = cv2.VideoCapture(1)  # the radxa rock pi seems to need to use id 1
 
 
-def signal_handler(sig, frame):
+def signal_handler(sig, frame):  # stop the program if systemctl says so
     print('Stopping program...')
     cap.release()
     cv2.destroyAllWindows()
     sys.exit(0)
 
 
-# Register the signal handler
+# register signal handler to stop the program if systemctl says so
 signal.signal(signal.SIGTERM, signal_handler)
 
 while True:
     ret, frame = cap.read()
 
-    # Convert the image to a JPEG-encoded bytes object
-    _, img_encoded = cv2.imencode('.jpg', frame)
+    _, img_encoded = cv2.imencode('.jpg', frame)  # encode the image as a jpg
 
-    # Create a dictionary to hold the request data
-    data = {'cameraId': camera_id}
+    data = {'cameraId': camera_id}  # add the camera ID to the request data
 
-    # Add the image data to the request data
+    # add the image to the request files
     files = {'image': ('image.jpg', img_encoded.tobytes(), 'image/jpeg')}
 
     # Send the image and camera ID to the endpoint using a POST request
