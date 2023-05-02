@@ -59,10 +59,35 @@ namespace CameraServer.Controllers
         }
 
         [HttpGet("get-image")]
-        public async Task<FileContentResult> GetCameraImage(int cameraId)
+        public async Task<IActionResult> GetCameraImage(int cameraId)
         {
+            if (cameraId < 1 && !await CameraContainer.Instance.ContainsKey(cameraId))
+                return new ApiResponse("Could not find the picture", HttpStatusCode.BadRequest);
+
             ICamera camera = await CameraContainer.Instance.GetCameraAsync(cameraId);
             return (await camera.GetImageAsync()).ToResponse();
+        }
+
+        [HttpGet("stream-image")]
+        public async Task StreamImage(int cameraId)
+        {
+            Response.Headers.Add("Content-Type", "text/event-stream");
+            Response.Headers.Add("Cache-Control", "no-cache");
+            Response.Headers.Add("Connection", "keep-alive");
+
+            while (!Response.HttpContext.RequestAborted.IsCancellationRequested)
+            {
+                byte[] imageData = (await (await CameraContainer.Instance.GetCameraAsync(cameraId)).GetImageAsync()).Bytes;
+                string imageDataString = Convert.ToBase64String(imageData);
+
+                string data = $"data:image/jpg;base64,{imageDataString}";
+                string eventString = $"event: image-update\ndata: {data}\n\n";
+
+                await Response.WriteAsync(eventString);
+                await Response.Body.FlushAsync();
+
+                await Task.Delay(200);
+            }
         }
     }
 }

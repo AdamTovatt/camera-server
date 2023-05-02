@@ -51,17 +51,17 @@ namespace CameraServerTests.Tests
                 await controller.UpdateCameraImage(image, 2);
             }
 
-            FileContentResult imageFromController = await controller.GetCameraImage(1);
+            IActionResult imageFromController = await controller.GetCameraImage(1);
 
             Assert.AreEqual(2, CameraContainer.Instance.CameraCount);
-            Assert.AreEqual(239172, imageFromController.FileContents.Length);
-            Assert.AreEqual("image/jpeg", imageFromController.ContentType);
+            Assert.AreEqual(239172, (((FileContentResult)(imageFromController)).FileContents).Length);
+            Assert.AreEqual("image/jpeg", ((FileContentResult)imageFromController).ContentType);
             Assert.AreEqual(239172, (await (await CameraContainer.Instance.GetCameraAsync(1)).GetImageAsync()).Bytes.Length);
 
-            FileContentResult imageFromController2 = await controller.GetCameraImage(2);
+            IActionResult imageFromController2 = await controller.GetCameraImage(2);
 
-            Assert.AreEqual(239172, imageFromController2.FileContents.Length);
-            Assert.AreEqual("image/jpeg", imageFromController2.ContentType);
+            Assert.AreEqual(239172, ((FileContentResult)imageFromController2).FileContents.Length);
+            Assert.AreEqual("image/jpeg", ((FileContentResult)imageFromController2).ContentType);
             Assert.AreEqual(239172, (await (await CameraContainer.Instance.GetCameraAsync(2)).GetImageAsync()).Bytes.Length);
         }
 
@@ -88,17 +88,17 @@ namespace CameraServerTests.Tests
                 await controller.UpdateCameraImage(image, 1);
             }
 
-            FileContentResult imageFromController = await controller.GetCameraImage(1);
+            IActionResult imageFromController = await controller.GetCameraImage(1);
 
             Assert.AreEqual(2, CameraContainer.Instance.CameraCount);
-            Assert.AreEqual(51431, imageFromController.FileContents.Length);
-            Assert.AreEqual("image/jpeg", imageFromController.ContentType);
+            Assert.AreEqual(51431, ((FileContentResult)imageFromController).FileContents.Length);
+            Assert.AreEqual("image/jpeg", ((FileContentResult)imageFromController).ContentType);
             Assert.AreEqual(51431, (await (await CameraContainer.Instance.GetCameraAsync(1)).GetImageAsync()).Bytes.Length);
 
-            FileContentResult imageFromController2 = await controller.GetCameraImage(2);
+            IActionResult imageFromController2 = await controller.GetCameraImage(2);
 
-            Assert.AreEqual(239172, imageFromController2.FileContents.Length);
-            Assert.AreEqual("image/jpeg", imageFromController2.ContentType);
+            Assert.AreEqual(239172, ((FileContentResult)imageFromController2).FileContents.Length);
+            Assert.AreEqual("image/jpeg", ((FileContentResult)imageFromController2).ContentType);
             Assert.AreEqual(239172, (await (await CameraContainer.Instance.GetCameraAsync(2)).GetImageAsync()).Bytes.Length);
         }
 
