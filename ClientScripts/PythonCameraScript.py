@@ -5,6 +5,7 @@ import signal
 import sys
 import time as time
 import datetime
+import subprocess
 
 try:
     # Open the text file in read mode
@@ -44,9 +45,18 @@ def signal_handler(sig, frame):  # stop the program if systemctl says so
     sys.exit(0)
 
 
+def get_temperature():
+    try:
+        return subprocess.run(['vcgencmd', 'measure_temp'], stdout=subprocess.PIPE).stdout.decode('utf-8')
+    except:
+        return 'T=Err'
+
+
 # register signal handler to stop the program if systemctl says so
 signal.signal(signal.SIGTERM, signal_handler)
 hasSentImage = False
+imageCounter = 0
+temperature = "None"
 
 while True:
     ret, frame = cap.read()
@@ -55,9 +65,16 @@ while True:
     font = cv2.FONT_HERSHEY_SIMPLEX
     # coordinates of the bottom right corner
     bottom_right_corner = (frame.shape[1]-230, frame.shape[0]-10)
+    bottom_left_corner = (10, frame.shape[0]-10)
     current_time = datetime.datetime.utcnow().strftime(
         "%Y-%m-%d %H:%M:%S UTC")  # current date and time
     cv2.putText(frame, current_time, bottom_right_corner,
+                font, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
+
+    if (imageCounter == 0):
+        temperature = get_temperature()
+
+    cv2.putText(frame, temperature, bottom_left_corner,
                 font, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
 
     _, img_encoded = cv2.imencode('.jpg', frame)  # encode the image as a jpg
@@ -75,5 +92,9 @@ while True:
             hasSentImage = True
     except:
         print('Error sending image to server')
+
+    imageCounter += 1
+    if (imageCounter > 100):
+        imageCounter = 0
 
     time.sleep(delay)
