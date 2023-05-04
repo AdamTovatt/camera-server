@@ -17,7 +17,7 @@ namespace CameraServer.Helpers.ImageProviding
 
         public CameraInformation GetInformation()
         {
-            return new CameraInformation(0, "MockedCamera", "This is a camera that is mocked, it doesn't exist for real");
+            return new CameraInformation(0, "MockedCamera", "This is a camera that is mocked, it doesn't exist for real", DateTime.UtcNow);
         }
     }
 }

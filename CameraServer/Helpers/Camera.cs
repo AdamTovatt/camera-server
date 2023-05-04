@@ -17,6 +17,8 @@ namespace CameraServer.Helpers
         {
             currentImage = image;
             await Task.CompletedTask;
+
+            information.LastActive = DateTime.Now;
         }
 
         public async Task<CameraImage> GetImageAsync()

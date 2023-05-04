@@ -28,7 +28,7 @@ namespace CameraServer.Helpers.ImageProviding
 
         public CameraInformation GetInformation()
         {
-            return new CameraInformation(0, "LocalCamera", "This is a camera that is on the server");
+            return new CameraInformation(0, "LocalCamera", "This is a camera that is on the server", DateTime.UtcNow);
         }
     }
 }

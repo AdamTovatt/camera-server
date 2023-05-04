@@ -18,7 +18,7 @@ namespace CameraServer.Repositories
 
         public CameraInformation GetCameraInformationById(int id)
         {
-            return new CameraInformation(id, "Unnamed camera", "Not implemented yet");
+            return new CameraInformation(id, "Unnamed camera", "Not implemented yet", DateTime.UtcNow);
         }
     }
 }
