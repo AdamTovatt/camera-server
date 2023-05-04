@@ -76,8 +76,11 @@ namespace CameraServer.Controllers
         }
 
         [HttpGet("stream-image")]
-        public async Task StreamImage(int cameraId)
+        public async Task StreamImage(int cameraId, int updateDelay = 200)
         {
+            if (updateDelay < 100)
+                return;
+
             Response.Headers.Add("Content-Type", "text/event-stream");
             Response.Headers.Add("Cache-Control", "no-cache");
             Response.Headers.Add("Connection", "keep-alive");
@@ -93,7 +96,7 @@ namespace CameraServer.Controllers
                 await Response.WriteAsync(eventString);
                 await Response.Body.FlushAsync();
 
-                await Task.Delay(200);
+                await Task.Delay(updateDelay);
             }
         }
     }
