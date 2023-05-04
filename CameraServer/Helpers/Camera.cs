@@ -1,27 +1,36 @@
 ﻿using CameraServer.Helpers.ImageProviding;
 using CameraServer.Models;
-using Microsoft.AspNetCore.Mvc;
-using System.Data;
 
 namespace CameraServer.Helpers
 {
     public class Camera : ICamera
     {
-        private CameraImage? CurrentImage;
+        private CameraImage? currentImage;
+        private CameraInformation information;
+
+        public Camera(CameraInformation information)
+        {
+            this.information = information;
+        }
 
         public async Task SetImage(CameraImage image)
         {
-            CurrentImage = image;
+            currentImage = image;
             await Task.CompletedTask;
         }
 
         public async Task<CameraImage> GetImageAsync()
         {
-            if (CurrentImage == null)
+            if (currentImage == null)
                 throw new Exception("no image available");
 
             await Task.CompletedTask;
-            return CurrentImage;
+            return currentImage;
+        }
+
+        public CameraInformation GetInformation()
+        {
+            return information;
         }
     }
 }

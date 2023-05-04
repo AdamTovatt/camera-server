@@ -20,9 +20,15 @@ namespace CameraServer.Helpers.ImageProviding
             return new CameraImage(mat.ToBytes());
         }
 
-        public Task SetImage(CameraImage image)
+        public async Task SetImage(CameraImage image)
         {
-            throw new NotImplementedException();
+            await Task.CompletedTask;
+            return; // can't set the image on a local camera
+        }
+
+        public CameraInformation GetInformation()
+        {
+            return new CameraInformation(0, "LocalCamera", "This is a camera that is on the server");
         }
     }
 }

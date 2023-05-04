@@ -26,6 +26,13 @@ namespace CameraServer.Controllers
             }
         }
 
+        [HttpGet("list")]
+        public async Task<ObjectResult> GetCameraList()
+        {
+            await Task.CompletedTask;
+            return new ApiResponse(CameraContainer.Instance.GetCameraList());
+        }
+
         [HttpGet("mocked-image")]
         public async Task<FileContentResult> GetImage()
         {

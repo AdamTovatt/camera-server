@@ -15,6 +15,12 @@ namespace CameraServerTests.Tests
     [TestClass]
     public class CameraControllerTests
     {
+        [TestInitialize]
+        public void Initialize()
+        {
+            CameraContainer.Instance.Clear();
+        }
+
         [TestMethod]
         public async Task Hello()
         {
@@ -164,6 +170,33 @@ namespace CameraServerTests.Tests
             Assert.AreEqual(2, CameraContainer.Instance.CameraCount);
             Assert.AreEqual(51431, (await (await CameraContainer.Instance.GetCameraAsync(1)).GetImageAsync()).Bytes.Length);
             Assert.AreEqual(239172, (await (await CameraContainer.Instance.GetCameraAsync(2)).GetImageAsync()).Bytes.Length);
+        }
+
+        [TestMethod]
+        public async Task GetCameraList()
+        {
+            CameraController controller = new CameraController();
+            ObjectResult result = await controller.GetCameraList();
+
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(result.Value);
+            Assert.AreEqual(200, result.StatusCode);
+
+            List<CameraInformation> cameraInformation = (List<CameraInformation>)result.Value;
+            
+            Assert.AreEqual(0, cameraInformation.Count);
+
+            await UpdateCameraImageFirstTime();
+
+            result = await controller.GetCameraList();
+
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(result.Value);
+            Assert.AreEqual(200, result.StatusCode);
+
+            cameraInformation = (List<CameraInformation>)result.Value;
+
+            Assert.AreEqual(2, cameraInformation.Count);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using CameraServer.Helpers.ImageProviding;
 using CameraServer.Models;
+using CameraServer.Repositories;
 
 namespace CameraServer.Helpers
 {
@@ -9,7 +10,7 @@ namespace CameraServer.Helpers
 
         private static CameraContainer? _instance;
 
-        public int CameraCount { get { return  container?.Count ?? 0; } }
+        public int CameraCount { get { return container?.Count ?? 0; } }
 
         public static CameraContainer Instance
         {
@@ -25,6 +26,12 @@ namespace CameraServer.Helpers
         {
             if (container == null)
                 container = new Dictionary<int, ICamera>();
+        }
+
+        public void Clear()
+        {
+            if (container != null)
+                container.Clear();
         }
 
         public async Task<ICamera> GetCameraAsync(int id)
@@ -47,10 +54,25 @@ namespace CameraServer.Helpers
             }
             else
             {
-                ICamera newCamera = new Camera();
+                ICamera newCamera = new Camera(CameraInformationRepository.Instance.GetCameraInformationById(id));
                 await newCamera.SetImage(image);
                 container.Add(id, newCamera);
             }
+        }
+
+        public List<CameraInformation> GetCameraList()
+        {
+            List<CameraInformation> result = new List<CameraInformation>();
+
+            if (container == null)
+                return result;
+
+            foreach (KeyValuePair<int, ICamera> pair in container)
+            {
+                result.Add(pair.Value.GetInformation());
+            }
+
+            return result;
         }
     }
 }

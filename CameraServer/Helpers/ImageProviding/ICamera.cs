@@ -8,5 +8,7 @@ namespace CameraServer.Helpers.ImageProviding
         public Task<CameraImage> GetImageAsync();
 
         public Task SetImage(CameraImage image);
+
+        public CameraInformation GetInformation();
     }
 }

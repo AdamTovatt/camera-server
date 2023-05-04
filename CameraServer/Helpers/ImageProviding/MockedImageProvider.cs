@@ -1,5 +1,4 @@
 ﻿using CameraServer.Models;
-using Microsoft.AspNetCore.Mvc;
 
 namespace CameraServer.Helpers.ImageProviding
 {
@@ -14,6 +13,11 @@ namespace CameraServer.Helpers.ImageProviding
         public Task SetImage(CameraImage image)
         {
             throw new NotImplementedException();
+        }
+
+        public CameraInformation GetInformation()
+        {
+            return new CameraInformation(0, "MockedCamera", "This is a camera that is mocked, it doesn't exist for real");
         }
     }
 }
