@@ -4,6 +4,7 @@ import numpy as np
 import signal
 import sys
 import time as time
+import datetime
 
 try:
     # Open the text file in read mode
@@ -49,6 +50,15 @@ hasSentImage = False
 
 while True:
     ret, frame = cap.read()
+
+    # Add current date and time to the bottom right corner of the image
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    # coordinates of the bottom right corner
+    bottom_right_corner = (frame.shape[1]-230, frame.shape[0]-10)
+    current_time = datetime.datetime.utcnow().strftime(
+        "%Y-%m-%d %H:%M:%S UTC")  # current date and time
+    cv2.putText(frame, current_time, bottom_right_corner,
+                font, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
 
     _, img_encoded = cv2.imencode('.jpg', frame)  # encode the image as a jpg
 
