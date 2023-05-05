@@ -1,6 +1,11 @@
-# camera-server
-Camera Server
-The Camera Server is a back-end API that allows users to interact with camera devices and get images or video streams from them. This README provides documentation for the API endpoints and their usage.
+# Camera Server
+## What is this?
+This is a web api for getting images from cameras. The cameras send their images to the server which stores them in memory. The server then provides endpoints for recieving the images. This way, the server is the connection between a front end and the cameras enabling front end applications to view the images of different cameras.
+
+This repository also contains a directory called "ClientScripts" which contains scripts that can be run on the camera clients. These scripts are written in python and are used to send images to the server using OpenCV. Please note that these specific scripts are not required to use the server. Any client that can send images to the server in the correct way can be used, but these scripts are provided as an example.
+
+## How is this made?
+This back end is written in C# using the .NET 6 framework and ASP.NET core. The example camera scripts are written in python.
 
 Installation and Setup
 Clone the repository from Github
