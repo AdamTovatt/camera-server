@@ -1,5 +1,4 @@
-﻿using CameraServer.Models;
-using CameraServer.Repositories;
+﻿using CameraServer.Repositories;
 
 namespace CameraServer.Helpers
 {
@@ -9,7 +8,9 @@ namespace CameraServer.Helpers
 
         private static CameraContainer? _instance;
 
+        public bool IsInitialized { get { return initialized; } }
         public int CameraCount { get { return container?.Count ?? 0; } }
+        private bool initialized = false;
 
         public static CameraContainer Instance
         {
@@ -27,7 +28,7 @@ namespace CameraServer.Helpers
                 container = new Dictionary<int, Camera>();
         }
 
-        public async Task LoadFromRepository(ICameraRepository cameraRepository)
+        public async Task InitializeFromRepository(ICameraRepository cameraRepository)
         {
             if(container == null)
                 container = new Dictionary<int, Camera>();
@@ -36,6 +37,8 @@ namespace CameraServer.Helpers
             {
                 container.Add(info.Id, new Camera(info));
             }
+
+            initialized = true;
         }
 
         public void Clear()
@@ -46,23 +49,35 @@ namespace CameraServer.Helpers
 
         public bool TryGetCamera(int cameraId, out Camera? camera)
         {
+            if (!initialized)
+                throw new InvalidOperationException("Camera container has not been initialized!");
+
             return container!.TryGetValue(cameraId, out camera);
         }
 
         public async Task<Camera> GetCameraAsync(int id)
         {
+            if (!initialized)
+                throw new InvalidOperationException("Camera container has not been initialized!");
+
             await Task.CompletedTask;
             return container![id];
         }
 
         public async Task<bool> ContainsKey(int id)
         {
+            if (!initialized)
+                throw new InvalidOperationException("Camera container has not been initialized!");
+
             await Task.CompletedTask;
             return container!.ContainsKey(id);
         }
 
         public List<CameraInformation> GetCameraList()
         {
+            if (!initialized)
+                throw new InvalidOperationException("Camera container has not been initialized!");
+
             List<CameraInformation> result = new List<CameraInformation>();
 
             if (container == null)

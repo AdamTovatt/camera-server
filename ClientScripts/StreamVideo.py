@@ -40,8 +40,11 @@ while running:
     except ConnectionRefusedError:
         print("Could not establish a new connection to the server, retrying after 5 seconds...")
         time.sleep(5)
+    except ConnectionAbortedError:
+        print("The server closed the connection, will attempt to reconnect in 5 seconds...")
+        time.sleep(5)
 
-# Release the resources
+        # Release the resources
 if (cap is not None):
     cap.release()
 

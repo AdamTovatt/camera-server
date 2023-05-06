@@ -1,4 +1,5 @@
 ﻿using CameraServer.Helpers;
+using CameraServer.Repositories;
 using Microsoft.AspNet.SignalR.WebSockets;
 using System.Net.WebSockets;
 
@@ -15,14 +16,24 @@ namespace CameraServer.Controllers
 
         public async Task Invoke(HttpContext context)
         {
-            if (context.WebSockets.IsWebSocketRequest)
+            try
             {
-                WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
-                await HandleWebSocket(webSocket);
+                if(!CameraContainer.Instance.IsInitialized)
+                    await CameraContainer.Instance.InitializeFromRepository(CameraRepository.Instance);
+
+                if (context.WebSockets.IsWebSocketRequest)
+                {
+                    WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
+                    await HandleWebSocket(webSocket);
+                }
+                else
+                {
+                    await nextDelegate(context);
+                }
             }
-            else
+            catch (Exception exception)
             {
-                await nextDelegate(context);
+                throw; // We should probably do something with the exception here...
             }
         }
 

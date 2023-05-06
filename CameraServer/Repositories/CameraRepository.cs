@@ -2,7 +2,7 @@
 
 namespace CameraServer.Repositories
 {
-    public class CameraRepository
+    public class CameraRepository : ICameraRepository
     {
         public static CameraRepository Instance
         {
@@ -16,8 +16,10 @@ namespace CameraServer.Repositories
 
         private static CameraRepository? _instance;
 
-        public async Task<CameraInformation> GetInformationByIdAsync(int id)
+        public async Task<CameraInformation> GetCameraInformationByIdAsync(int id)
         {
+            await Task.CompletedTask;
+
             if (id == 1337)
                 return new CameraInformation(id, "WebCam", "The webcam on my computer", DateTime.MinValue);
 
