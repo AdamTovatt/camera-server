@@ -76,6 +76,8 @@ while running:
             # Send the video chunk to the server
             ws.send_binary(struct.pack('<I', len(data)) + data)
 
+            del buffer
+
             # Wait a little bit to prevent flooding the server
             time.sleep(0.01)
     except ConnectionResetError as error:
