@@ -87,7 +87,7 @@ while running:
             time.sleep(0.01)
             restartTimer += 0.01
 
-            if (restartTimer >= 10):
+            if (restartTimer >= 2):
                 print(
                     "Max time running reached, will exit and hope for restart by systmctl to try to avoid memory leaks")
                 running = False
