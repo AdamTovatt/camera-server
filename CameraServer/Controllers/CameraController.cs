@@ -1,5 +1,6 @@
 using CameraServer.Helpers;
 using CameraServer.Models;
+using CameraServer.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Sakur.WebApiUtilities.Models;
 using System.Net;
@@ -74,6 +75,9 @@ namespace CameraServer.Controllers
             Response.Headers.Add("Content-Type", "text/event-stream");
             Response.Headers.Add("Cache-Control", "no-cache");
             Response.Headers.Add("Connection", "keep-alive");
+
+            if(!CameraContainer.Instance.IsInitialized)
+                await CameraContainer.Instance.InitializeFromRepository(CameraRepository.Instance);
 
             while (!Response.HttpContext.RequestAborted.IsCancellationRequested)
             {

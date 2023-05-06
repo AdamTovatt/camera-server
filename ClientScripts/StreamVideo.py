@@ -78,16 +78,19 @@ while running:
 
             # Wait a little bit to prevent flooding the server
             time.sleep(0.01)
-    except ConnectionResetError:
+    except ConnectionResetError as error:
         print(
             "The established connection to the server was lost, will attempt to reconnect")
+        print(error)
         cap.release()  # Release the camera resource since we don't know if we will be able to reconnect
-    except ConnectionRefusedError:
+    except ConnectionRefusedError as error:
         print(
             "Could not establish a new connection to the server, retrying after 5 seconds")
+        print(error)
         time.sleep(5)
-    except ConnectionAbortedError:
+    except ConnectionAbortedError as error:
         print("The server closed the connection, will attempt to reconnect in 5 seconds")
+        print(error)
         time.sleep(5)
     except socket.timeout:
         print("The connection timed out, will attempt to reconnect in 30 seconds")
