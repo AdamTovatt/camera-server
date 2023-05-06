@@ -33,17 +33,6 @@ namespace CameraServerTests.Tests
         }
 
         [TestMethod]
-        public async Task GetImage()
-        {
-            CameraController controller = new CameraController();
-            var result = await controller.GetImage();
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual("image/jpeg", result.ContentType);
-            Assert.AreEqual(239172, result.FileContents.Length); // check that the amount of bytes that were read is correct
-        }
-
-        [TestMethod]
         public async Task GetCameraImage()
         {
             CameraController controller = new CameraController();

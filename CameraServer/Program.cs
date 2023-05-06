@@ -1,3 +1,6 @@
+using CameraServer.Controllers;
+using Microsoft.AspNet.SignalR.WebSockets;
+
 namespace CameraServer
 {
     public class Program
@@ -29,6 +32,9 @@ namespace CameraServer
 
             //app.UseHttpsRedirection();
 
+            app.UseWebSockets();
+            //app.UseMiddleware<StreamInputHandler>();
+            app.Map("/video-input-stream", (app) => { app.UseMiddleware<StreamInputHandler>(); });
             app.UseCors("corsapp");
             app.UseAuthorization();
 

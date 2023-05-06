@@ -1,5 +1,4 @@
 using CameraServer.Helpers;
-using CameraServer.Helpers.ImageProviding;
 using CameraServer.Models;
 using Microsoft.AspNetCore.Mvc;
 using Sakur.WebApiUtilities.Models;
@@ -33,32 +32,23 @@ namespace CameraServer.Controllers
             return new ApiResponse(CameraContainer.Instance.GetCameraList());
         }
 
-        [HttpGet("mocked-image")]
-        public async Task<FileContentResult> GetImage()
-        {
-            MockedImageProvider imageProvider = new MockedImageProvider();
-            return (await imageProvider.GetImageAsync()).ToResponse();
-        }
-
-        [HttpGet("image")]
-        public async Task<FileContentResult> GetCameraImage()
-        {
-            LocalCameraImageProvider imageProvider = new LocalCameraImageProvider();
-            return (await imageProvider.GetImageAsync()).ToResponse();
-        }
-
         [HttpPost("update-image")]
         public async Task<ObjectResult> UpdateCameraImage([FromForm] IFormFile image, [FromForm] int cameraId)
         {
             if (cameraId < 1)
                 return new ApiResponse("Invalid id in FormData", HttpStatusCode.BadRequest);
 
+            Camera? camera = null;
+            
+            if(!CameraContainer.Instance.TryGetCamera(cameraId, out camera) || camera == null)
+                return new ApiResponse($"No camera with id {cameraId}", HttpStatusCode.BadRequest);
+
             using (Stream stream = image.OpenReadStream())
             {
                 using (MemoryStream memoryStream = new MemoryStream((int)stream.Length))
                 {
                     await stream.CopyToAsync(memoryStream);
-                    await CameraContainer.Instance.SetImage(cameraId, new CameraImage(memoryStream));
+                    camera.SetImage(memoryStream.ToArray());
                 }
             }
 
@@ -71,14 +61,14 @@ namespace CameraServer.Controllers
             if (cameraId < 1 && !await CameraContainer.Instance.ContainsKey(cameraId))
                 return new ApiResponse("Could not find the picture", HttpStatusCode.BadRequest);
 
-            ICamera camera = await CameraContainer.Instance.GetCameraAsync(cameraId);
+            Camera camera = await CameraContainer.Instance.GetCameraAsync(cameraId);
             return (await camera.GetImageAsync()).ToResponse();
         }
 
         [HttpGet("stream-image")]
-        public async Task StreamImage(int cameraId, int updateDelay = 200)
+        public async Task StreamImage(int cameraId, int updateDelay = 0)
         {
-            if (updateDelay < 100)
+            if (updateDelay <= 0)
                 return;
 
             Response.Headers.Add("Content-Type", "text/event-stream");

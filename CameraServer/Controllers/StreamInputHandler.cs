@@ -1,0 +1,71 @@
+﻿using CameraServer.Helpers;
+using Microsoft.AspNet.SignalR.WebSockets;
+using System.Net.WebSockets;
+
+namespace CameraServer.Controllers
+{
+    public class StreamInputHandler : WebSocketHandler
+    {
+        private readonly RequestDelegate nextDelegate;
+
+        public StreamInputHandler(RequestDelegate nextDelegate) : base(null)
+        {
+            this.nextDelegate = nextDelegate;
+        }
+
+        public async Task Invoke(HttpContext context)
+        {
+            if (context.WebSockets.IsWebSocketRequest)
+            {
+                WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
+                await HandleWebSocket(webSocket);
+            }
+            else
+            {
+                await nextDelegate(context);
+            }
+        }
+
+        private async Task HandleWebSocket(WebSocket socket)
+        {
+            WebSocketReceiveResult? result = null;
+            Camera? camera = null;
+
+            do
+            {
+                if (camera == null)
+                {
+                    byte[] sizeBuffer = new byte[4];
+                    result = await socket.ReceiveAsync(new ArraySegment<byte>(sizeBuffer), CancellationToken.None);
+
+                    if (!CameraContainer.Instance.TryGetCamera(BitConverter.ToInt32(sizeBuffer, 0), out camera)) // Close the stream if we don't get a valid camera id
+                        await socket.CloseAsync(WebSocketCloseStatus.PolicyViolation, $"No camera with id {BitConverter.ToInt32(sizeBuffer, 0)} exists", CancellationToken.None);
+                }
+                else
+                {
+                    // Receive the size of the image data
+                    byte[] sizeBuffer = new byte[4];
+                    result = await socket.ReceiveAsync(new ArraySegment<byte>(sizeBuffer), CancellationToken.None);
+                    int dataSize = BitConverter.ToInt32(sizeBuffer, 0);
+
+                    // Receive the image data
+                    byte[] data = new byte[dataSize];
+                    int remainingBytes = dataSize;
+                    while (remainingBytes > 0)
+                    {
+                        byte[] buffer = new byte[remainingBytes];
+                        result = await socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                        Buffer.BlockCopy(buffer, 0, data, dataSize - remainingBytes, result.Count);
+                        remainingBytes -= result.Count;
+                    }
+
+                    if (data.Length > 0)
+                        camera.SetImage(data);
+                }
+            }
+            while (!result.CloseStatus.HasValue);
+
+            await socket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
+        }
+    }
+}
