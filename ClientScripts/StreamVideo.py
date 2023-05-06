@@ -58,10 +58,15 @@ while running:
 
         print("Did send camera ID, starting video capture")
 
+        if (cap is not None):
+            cap.release()
+
         # Open the camera
         cap = cv2.VideoCapture(0)
 
         print("Video capture started, will start sending video")
+
+        restartTimer = 0
 
         # Capture and encode the video
         while running:
@@ -80,6 +85,12 @@ while running:
 
             # Wait a little bit to prevent flooding the server
             time.sleep(0.01)
+            restartTimer += 0.01
+
+            if (restartTimer >= 120):
+                print(
+                    "Max time running reached, will exit and hope for restart by systmctl to try to avoid memory leaks")
+                running = False
     except ConnectionResetError as error:
         print(
             "The established connection to the server was lost, will attempt to reconnect")
@@ -98,7 +109,7 @@ while running:
         print("The connection timed out, will attempt to reconnect in 30 seconds")
         time.sleep(30)
 
-        # Release the resources
+# Release the resources
 if (cap is not None):
     cap.release()
 
