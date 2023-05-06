@@ -48,7 +48,7 @@ while running:
     try:
         print("Connecting to the server at " + config.webSocketEndpoint)
         # Connect to the server using WebSocket (Important note! The port is 5000, not 5001! It doesn't work with 5001, I don't know why)
-        ws = websocket.create_connection(config.webSocketEndpoint)
+        ws = websocket.create_connection(config.webSocketEndpoint, timeout=8)
 
         print("Did connect to the server, sending camera ID")
 
