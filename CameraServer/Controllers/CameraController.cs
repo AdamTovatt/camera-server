@@ -59,11 +59,21 @@ namespace CameraServer.Controllers
         [HttpGet("get-image")]
         public async Task<IActionResult> GetCameraImage(int cameraId)
         {
-            if (cameraId < 1 && !await CameraContainer.Instance.ContainsKey(cameraId))
-                return new ApiResponse("Could not find the picture", HttpStatusCode.BadRequest);
+            try
+            {
+                if (cameraId < 1 && !await CameraContainer.Instance.ContainsKey(cameraId))
+                    return new ApiResponse("Could not find the picture", HttpStatusCode.BadRequest);
 
-            Camera camera = await CameraContainer.Instance.GetCameraAsync(cameraId);
-            return (await camera.GetImageAsync()).ToResponse();
+                if (!CameraContainer.Instance.IsInitialized)
+                    await CameraContainer.Instance.InitializeFromRepository(CameraRepository.Instance);
+
+                Camera camera = await CameraContainer.Instance.GetCameraAsync(cameraId);
+                return (await camera.GetImageAsync()).ToResponse();
+            }
+            catch(ApiException exception)
+            {
+                return new ApiResponse(exception);
+            }
         }
 
         [HttpGet("stream-image")]

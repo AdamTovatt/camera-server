@@ -1,4 +1,5 @@
 ﻿using CameraServer.Repositories;
+using Sakur.WebApiUtilities.Models;
 
 namespace CameraServer.Helpers
 {
@@ -50,7 +51,7 @@ namespace CameraServer.Helpers
         public bool TryGetCamera(int cameraId, out Camera? camera)
         {
             if (!initialized)
-                throw new InvalidOperationException("Camera container has not been initialized!");
+                throw new ApiException("Camera container has not been initialized!", System.Net.HttpStatusCode.InternalServerError);
 
             return container!.TryGetValue(cameraId, out camera);
         }
@@ -58,7 +59,7 @@ namespace CameraServer.Helpers
         public async Task<Camera> GetCameraAsync(int id)
         {
             if (!initialized)
-                throw new InvalidOperationException("Camera container has not been initialized!");
+                throw new ApiException("Camera container has not been initialized!", System.Net.HttpStatusCode.InternalServerError);
 
             await Task.CompletedTask;
             return container![id];

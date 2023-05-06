@@ -5,3 +5,4 @@
 /CameraServerTests/obj/*
 /CameraServer/Properties/launchSettings.json
 /ClientScripts/camera-config.txt
+/ClientScripts/camera-config.json
