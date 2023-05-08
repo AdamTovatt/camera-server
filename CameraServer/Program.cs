@@ -1,5 +1,5 @@
 using CameraServer.Controllers;
-using Microsoft.AspNet.SignalR.WebSockets;
+using CameraServer.Repositories;
 
 namespace CameraServer
 {
@@ -20,6 +20,8 @@ namespace CameraServer
             {
                 builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
             }));
+
+            builder.Services.AddScoped<ICameraRepository, CameraRepository>();
 
             var app = builder.Build();
 

@@ -1,5 +1,4 @@
 using CameraServer.Helpers;
-using CameraServer.Models;
 using CameraServer.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Sakur.WebApiUtilities.Models;
@@ -11,6 +10,12 @@ namespace CameraServer.Controllers
     [Route("[controller]")]
     public class CameraController : ControllerBase
     {
+        private ICameraRepository cameraRepository;
+
+        public CameraController(ICameraRepository cameraRepository)
+        {
+            this.cameraRepository = cameraRepository;
+        }
 
         [HttpGet("hello")]
         public async Task<ObjectResult> Hello()
@@ -29,7 +34,9 @@ namespace CameraServer.Controllers
         [HttpGet("list")]
         public async Task<ObjectResult> GetCameraList()
         {
-            await Task.CompletedTask;
+            if (!CameraContainer.Instance.IsInitialized)
+                await CameraContainer.Instance.InitializeFromRepository(cameraRepository);
+
             return new ApiResponse(CameraContainer.Instance.GetCameraList());
         }
 
@@ -40,8 +47,11 @@ namespace CameraServer.Controllers
                 return new ApiResponse("Invalid id in FormData", HttpStatusCode.BadRequest);
 
             Camera? camera = null;
-            
-            if(!CameraContainer.Instance.TryGetCamera(cameraId, out camera) || camera == null)
+
+            if (!CameraContainer.Instance.IsInitialized)
+                await CameraContainer.Instance.InitializeFromRepository(cameraRepository);
+
+            if (!CameraContainer.Instance.TryGetCamera(cameraId, out camera) || camera == null)
                 return new ApiResponse($"No camera with id {cameraId}", HttpStatusCode.BadRequest);
 
             using (Stream stream = image.OpenReadStream())
@@ -65,12 +75,12 @@ namespace CameraServer.Controllers
                     return new ApiResponse("Could not find the picture", HttpStatusCode.BadRequest);
 
                 if (!CameraContainer.Instance.IsInitialized)
-                    await CameraContainer.Instance.InitializeFromRepository(CameraRepository.Instance);
+                    await CameraContainer.Instance.InitializeFromRepository(cameraRepository);
 
                 Camera camera = await CameraContainer.Instance.GetCameraAsync(cameraId);
                 return (await camera.GetImageAsync()).ToResponse();
             }
-            catch(ApiException exception)
+            catch (ApiException exception)
             {
                 return new ApiResponse(exception);
             }
@@ -86,8 +96,8 @@ namespace CameraServer.Controllers
             Response.Headers.Add("Cache-Control", "no-cache");
             Response.Headers.Add("Connection", "keep-alive");
 
-            if(!CameraContainer.Instance.IsInitialized)
-                await CameraContainer.Instance.InitializeFromRepository(CameraRepository.Instance);
+            if (!CameraContainer.Instance.IsInitialized)
+                await CameraContainer.Instance.InitializeFromRepository(cameraRepository);
 
             while (!Response.HttpContext.RequestAborted.IsCancellationRequested)
             {
