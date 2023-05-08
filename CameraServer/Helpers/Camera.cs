@@ -1,5 +1,4 @@
 ﻿using CameraServer.Models;
-using System;
 
 namespace CameraServer.Helpers
 {

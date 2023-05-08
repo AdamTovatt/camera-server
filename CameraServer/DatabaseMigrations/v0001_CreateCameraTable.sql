@@ -1,0 +1,6 @@
+﻿CREATE TABLE camera (
+id INT PRIMARY KEY,
+"name" VARCHAR UNIQUE NOT NULL,
+"description" VARCHAR,
+token VARCHAR NOT NULL,
+last_active TIMESTAMP NOT NULL DEFAULT NOW());
