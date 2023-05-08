@@ -33,7 +33,6 @@ namespace CameraServer
             //app.UseHttpsRedirection();
 
             app.UseWebSockets();
-            //app.UseMiddleware<StreamInputHandler>();
             app.Map("/video-input-stream", (app) => { app.UseMiddleware<StreamInputHandler>(); });
             app.UseCors("corsapp");
             app.UseAuthorization();
