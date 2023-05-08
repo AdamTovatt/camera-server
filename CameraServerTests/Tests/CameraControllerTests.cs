@@ -1,30 +1,26 @@
 ﻿using CameraServer.Controllers;
 using CameraServer.Helpers;
-using CameraServer.Models;
+using CameraServerTests.Mocks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CameraServerTests.Tests
 {
     [TestClass]
     public class CameraControllerTests
     {
+        private MockedCameraRepository cameraRepository = new MockedCameraRepository();
+
         [TestInitialize]
         public void Initialize()
         {
-            CameraContainer.Instance.Clear();
+
         }
 
         [TestMethod]
         public async Task Hello()
         {
-            CameraController controller = new CameraController();
+            CameraController controller = new CameraController(cameraRepository);
             ObjectResult result = await controller.Hello();
 
             Assert.IsNotNull(result);
@@ -33,20 +29,9 @@ namespace CameraServerTests.Tests
         }
 
         [TestMethod]
-        public async Task GetImage()
-        {
-            CameraController controller = new CameraController();
-            var result = await controller.GetImage();
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual("image/jpeg", result.ContentType);
-            Assert.AreEqual(239172, result.FileContents.Length); // check that the amount of bytes that were read is correct
-        }
-
-        [TestMethod]
         public async Task GetCameraImage()
         {
-            CameraController controller = new CameraController();
+            CameraController controller = new CameraController(cameraRepository);
             using (MemoryStream? stream = await TestUtilities.GetTestFileAsync("MockedCameraImage"))
             {
                 if (stream == null)
@@ -74,7 +59,7 @@ namespace CameraServerTests.Tests
         [TestMethod]
         public async Task GetCameraImageOverwrite()
         {
-            CameraController controller = new CameraController();
+            CameraController controller = new CameraController(cameraRepository);
             using (MemoryStream? stream = await TestUtilities.GetTestFileAsync("MockedCameraImage"))
             {
                 if (stream == null)
@@ -111,7 +96,7 @@ namespace CameraServerTests.Tests
         [TestMethod]
         public async Task UpdateCameraImageFirstTime()
         {
-            CameraController controller = new CameraController();
+            CameraController controller = new CameraController(cameraRepository);
             using (MemoryStream? stream = await TestUtilities.GetTestFileAsync("MockedCameraImage"))
             {
                 if (stream == null)
@@ -135,7 +120,7 @@ namespace CameraServerTests.Tests
         [TestMethod]
         public async Task UpdateCameraImageOverwrite()
         {
-            CameraController controller = new CameraController();
+            CameraController controller = new CameraController(cameraRepository);
             using (MemoryStream? stream = await TestUtilities.GetTestFileAsync("MockedCameraImage"))
             {
                 if (stream == null)
@@ -175,7 +160,7 @@ namespace CameraServerTests.Tests
         [TestMethod]
         public async Task GetCameraList()
         {
-            CameraController controller = new CameraController();
+            CameraController controller = new CameraController(cameraRepository);
             ObjectResult result = await controller.GetCameraList();
 
             Assert.IsNotNull(result);
@@ -183,20 +168,12 @@ namespace CameraServerTests.Tests
             Assert.AreEqual(200, result.StatusCode);
 
             List<CameraInformation> cameraInformation = (List<CameraInformation>)result.Value;
-            
-            Assert.AreEqual(0, cameraInformation.Count);
-
-            await UpdateCameraImageFirstTime();
-
-            result = await controller.GetCameraList();
-
-            Assert.IsNotNull(result);
-            Assert.IsNotNull(result.Value);
-            Assert.AreEqual(200, result.StatusCode);
-
-            cameraInformation = (List<CameraInformation>)result.Value;
-
+           
             Assert.AreEqual(2, cameraInformation.Count);
+            Assert.AreEqual("Mocked Camera 1", cameraInformation.First().Name);
+            Assert.AreEqual("Second Camera", cameraInformation.Last().Name);
+            Assert.AreEqual("This is the first mocked camera", cameraInformation.First().Description);
+            Assert.AreEqual("This is the second mocked camera", cameraInformation.Last().Description);
         }
     }
 }

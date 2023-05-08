@@ -1,16 +1,17 @@
-﻿using CameraServer.Helpers.ImageProviding;
-using CameraServer.Models;
-using CameraServer.Repositories;
+﻿using CameraServer.Repositories;
+using Sakur.WebApiUtilities.Models;
 
 namespace CameraServer.Helpers
 {
     public class CameraContainer
     {
-        private static Dictionary<int, ICamera>? container;
+        private static Dictionary<int, Camera>? container;
 
         private static CameraContainer? _instance;
 
+        public bool IsInitialized { get { return initialized; } }
         public int CameraCount { get { return container?.Count ?? 0; } }
+        private bool initialized = false;
 
         public static CameraContainer Instance
         {
@@ -25,7 +26,20 @@ namespace CameraServer.Helpers
         public CameraContainer()
         {
             if (container == null)
-                container = new Dictionary<int, ICamera>();
+                container = new Dictionary<int, Camera>();
+        }
+
+        public async Task InitializeFromRepository(ICameraRepository cameraRepository)
+        {
+            if(container == null)
+                container = new Dictionary<int, Camera>();
+
+            foreach (CameraInformation info in await cameraRepository.GetAllCameraInformationsAsync())
+            {
+                container.Add(info.Id, new Camera(info));
+            }
+
+            initialized = true;
         }
 
         public void Clear()
@@ -34,40 +48,43 @@ namespace CameraServer.Helpers
                 container.Clear();
         }
 
-        public async Task<ICamera> GetCameraAsync(int id)
+        public bool TryGetCamera(int cameraId, out Camera? camera)
         {
+            if (!initialized)
+                throw new ApiException("Camera container has not been initialized!", System.Net.HttpStatusCode.InternalServerError);
+
+            return container!.TryGetValue(cameraId, out camera);
+        }
+
+        public async Task<Camera> GetCameraAsync(int id)
+        {
+            if (!initialized)
+                throw new ApiException("Camera container has not been initialized!", System.Net.HttpStatusCode.InternalServerError);
+
             await Task.CompletedTask;
             return container![id];
         }
 
         public async Task<bool> ContainsKey(int id)
         {
+            if (!initialized)
+                throw new InvalidOperationException("Camera container has not been initialized!");
+
             await Task.CompletedTask;
             return container!.ContainsKey(id);
         }
 
-        public async Task SetImage(int id, CameraImage image)
-        {
-            if (container!.TryGetValue(id, out ICamera? camera))
-            {
-                await camera.SetImage(image);
-            }
-            else
-            {
-                ICamera newCamera = new Camera(CameraInformationRepository.Instance.GetCameraInformationById(id));
-                await newCamera.SetImage(image);
-                container.Add(id, newCamera);
-            }
-        }
-
         public List<CameraInformation> GetCameraList()
         {
+            if (!initialized)
+                throw new InvalidOperationException("Camera container has not been initialized!");
+
             List<CameraInformation> result = new List<CameraInformation>();
 
             if (container == null)
                 return result;
 
-            foreach (KeyValuePair<int, ICamera> pair in container)
+            foreach (KeyValuePair<int, Camera> pair in container)
             {
                 result.Add(pair.Value.GetInformation());
             }

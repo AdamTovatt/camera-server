@@ -1,3 +1,6 @@
+using CameraServer.Controllers;
+using CameraServer.Repositories;
+
 namespace CameraServer
 {
     public class Program
@@ -18,6 +21,8 @@ namespace CameraServer
                 builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
             }));
 
+            builder.Services.AddScoped<ICameraRepository, CameraRepository>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -29,6 +34,8 @@ namespace CameraServer
 
             //app.UseHttpsRedirection();
 
+            app.UseWebSockets();
+            app.Map("/video-input-stream", (app) => { app.UseMiddleware<StreamInputHandler>(); });
             app.UseCors("corsapp");
             app.UseAuthorization();
 
