@@ -40,10 +40,10 @@ namespace CameraServer.Helpers
             return TokenHelper.GetToken(information.Id) == information.Token;
         }
 
-        public async void SetPreview()
+        public async Task SetPreviewAsync()
         {
             await Task.CompletedTask;
-            Information.Preview = Convert.ToBase64String(GetImageAsync().Result.Bytes);
+            Information.Preview = Convert.ToBase64String((await GetImageAsync()).Bytes);
         }
     }
 }

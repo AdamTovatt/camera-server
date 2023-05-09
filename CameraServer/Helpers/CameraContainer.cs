@@ -74,7 +74,7 @@ namespace CameraServer.Helpers
             return container!.ContainsKey(id);
         }
 
-        public List<CameraInformation> GetCameraList()
+        public async Task<List<CameraInformation>> GetCameraListAsync()
         {
             if (!initialized)
                 throw new InvalidOperationException("Camera container has not been initialized!");
@@ -86,9 +86,8 @@ namespace CameraServer.Helpers
 
             foreach (KeyValuePair<int, Camera> pair in container)
             {
-                Camera camera = pair.Value;
-                camera.SetPreview();
-                result.Add(camera.Information);
+                await pair.Value.SetPreviewAsync();
+                result.Add(pair.Value.Information);
             }
 
             return result;
