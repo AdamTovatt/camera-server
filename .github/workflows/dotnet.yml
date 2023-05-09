@@ -35,6 +35,6 @@ jobs:
 
     # Execute all unit tests in the solution
     - name: Setup Postgres
-      run: ./Tests/setup_test_db.sh
+      run: ./CameraServerTests/setup_test_db.sh
     - name: Run unit tests
       run: dotnet test -v:detailed --consoleLoggerParameters:ErrorsOnly
