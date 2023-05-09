@@ -31,7 +31,7 @@ namespace CameraServer.Helpers
 
         public async Task InitializeFromRepository(ICameraRepository cameraRepository)
         {
-            if(container == null)
+            if (container == null)
                 container = new Dictionary<int, Camera>();
 
             foreach (CameraInformation info in await cameraRepository.GetAllCameraInformationsAsync())
@@ -86,7 +86,9 @@ namespace CameraServer.Helpers
 
             foreach (KeyValuePair<int, Camera> pair in container)
             {
-                result.Add(pair.Value.Information);
+                Camera camera = pair.Value;
+                camera.SetPreview();
+                result.Add(camera.Information);
             }
 
             return result;
