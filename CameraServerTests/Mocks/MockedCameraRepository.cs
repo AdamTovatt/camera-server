@@ -18,7 +18,7 @@ namespace CameraServerTests.Mocks
             return cameras;
         }
 
-        public async Task<CameraInformation> GetCameraInformationByIdAsync(int id)
+        public async Task<CameraInformation?> GetCameraInformationByIdAsync(int id)
         {
             await Task.CompletedTask;
 

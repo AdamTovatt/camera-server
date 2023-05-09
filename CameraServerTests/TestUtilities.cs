@@ -1,10 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using CameraServer.Helpers;
+using Microsoft.AspNetCore.Http;
+using Npgsql;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CameraServerTests
 {
@@ -61,6 +58,18 @@ namespace CameraServerTests
                 assembly = Assembly.GetExecutingAssembly();
 
             return assembly.GetManifestResourceNames().Single(str => str.EndsWith(resourceName));
+        }
+
+        public static async Task ExecuteQueryAsync(string query)
+        {
+            using (NpgsqlConnection connection = new NpgsqlConnection(ConnectionStringProvider.GetConnectionString()))
+            {
+                await connection.OpenAsync();
+                using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+                {
+                    await command.ExecuteScalarAsync();
+                }
+            }
         }
     }
 }

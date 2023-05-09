@@ -1,4 +1,5 @@
 using CameraServer.Controllers;
+using CameraServer.Helpers;
 using CameraServer.Repositories;
 
 namespace CameraServer
@@ -7,6 +8,8 @@ namespace CameraServer
     {
         public static void Main(string[] args)
         {
+            Migrator.PerformDatabaseMigrations(); // run database migrations
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.

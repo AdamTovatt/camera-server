@@ -1,10 +1,11 @@
 ﻿using CameraServer.Models;
-using System;
 
 namespace CameraServer.Helpers
 {
     public class Camera
     {
+        public CameraInformation Information { get { return information; } }
+
         private CameraImage currentImage;
         private CameraInformation information;
 
@@ -31,9 +32,12 @@ namespace CameraServer.Helpers
             return currentImage;
         }
 
-        public CameraInformation GetInformation()
+        public bool IsValidToken(string token)
         {
-            return information;
+            if(information == null || information.Token == null)
+                return false;
+
+            return TokenHelper.GetToken(information.Id) == information.Token;
         }
     }
 }

@@ -86,7 +86,7 @@ namespace CameraServer.Helpers
 
             foreach (KeyValuePair<int, Camera> pair in container)
             {
-                result.Add(pair.Value.GetInformation());
+                result.Add(pair.Value.Information);
             }
 
             return result;

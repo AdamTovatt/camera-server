@@ -41,7 +41,7 @@ namespace CameraServer.Controllers
         }
 
         [HttpPost("update-image")]
-        public async Task<ObjectResult> UpdateCameraImage([FromForm] IFormFile image, [FromForm] int cameraId)
+        public async Task<ObjectResult> UpdateCameraImage([FromForm] IFormFile image, [FromForm] int cameraId, [FromForm] string token)
         {
             if (cameraId < 1)
                 return new ApiResponse("Invalid id in FormData", HttpStatusCode.BadRequest);
@@ -53,6 +53,9 @@ namespace CameraServer.Controllers
 
             if (!CameraContainer.Instance.TryGetCamera(cameraId, out camera) || camera == null)
                 return new ApiResponse($"No camera with id {cameraId}", HttpStatusCode.BadRequest);
+
+            if (!camera.IsValidToken(token))
+                return new ApiResponse("Invalid token", HttpStatusCode.Unauthorized);
 
             using (Stream stream = image.OpenReadStream())
             {

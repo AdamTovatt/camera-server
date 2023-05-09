@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="DatabaseMigrations\v0001_CreateCameraTable.sql" />
     <None Remove="EmbeddedFiles\MockedCameraImage" />
   </ItemGroup>
 
@@ -19,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="DatabaseMigrations\v0001_CreateCameraTable.sql" />
     <EmbeddedResource Include="EmbeddedFiles\MockedCameraImage" />
   </ItemGroup>
 
@@ -31,11 +33,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="dbup-core" Version="5.0.10" />
+    <PackageReference Include="dbup-postgresql" Version="5.0.8" />
     <PackageReference Include="Microsoft.AspNet.SignalR.Core" Version="2.4.3" />
-    <PackageReference Include="OpenCvSharp4" Version="4.7.0.20230115" />
-    <PackageReference Include="OpenCvSharp4.runtime.linux-arm" Version="4.7.0.20230115" />
-    <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.7.0.20230115" />
-    <PackageReference Include="OpenCvSharp4_.runtime.ubuntu.20.04-x64" Version="4.7.0.20230115" />
+    <PackageReference Include="Npgsql" Version="7.0.4" />
     <PackageReference Include="SakurWebApiUtilities" Version="1.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>

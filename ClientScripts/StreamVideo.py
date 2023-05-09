@@ -54,9 +54,15 @@ while running:
         print("Did connect to the server, sending camera ID")
 
         # Send the camera ID to the server
-        ws.send_binary(struct.pack('<I', 1337))
+        ws.send_binary(struct.pack('<I', config.cameraId))
 
-        print("Did send camera ID, starting video capture")
+        print("Did send camera ID, will send token")
+
+        # Send the camera token to the server
+        ws.send_binary(struct.pack('<I', len(config.cameraToken)
+                                   ) + config.cameraToken.encode('utf-8'))
+
+        print("Did send token, will start video capture")
 
         if (cap is not None):
             cap.release()

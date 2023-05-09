@@ -31,6 +31,14 @@ namespace CameraServerTests.Tests
         [TestMethod]
         public async Task GetCameraImage()
         {
+            CameraInformation? camera1  = await cameraRepository.GetCameraInformationByIdAsync(1);
+            CameraInformation? camera2 = await cameraRepository.GetCameraInformationByIdAsync(2);
+
+            Assert.IsNotNull(camera1);
+            Assert.IsNotNull(camera2);
+            Assert.IsNotNull(camera1.Token);
+            Assert.IsNotNull(camera2.Token);
+
             CameraController controller = new CameraController(cameraRepository);
             using (MemoryStream? stream = await TestUtilities.GetTestFileAsync("MockedCameraImage"))
             {
@@ -38,8 +46,8 @@ namespace CameraServerTests.Tests
                     Assert.Fail("Could not load MockedCameraImage");
 
                 IFormFile image = TestUtilities.GetIFormFile(stream);
-                await controller.UpdateCameraImage(image, 1);
-                await controller.UpdateCameraImage(image, 2);
+                await controller.UpdateCameraImage(image, 1, camera1.Token);
+                await controller.UpdateCameraImage(image, 2, camera2.Token);
             }
 
             IActionResult imageFromController = await controller.GetCameraImage(1);
@@ -59,6 +67,14 @@ namespace CameraServerTests.Tests
         [TestMethod]
         public async Task GetCameraImageOverwrite()
         {
+            CameraInformation? camera1 = await cameraRepository.GetCameraInformationByIdAsync(1);
+            CameraInformation? camera2 = await cameraRepository.GetCameraInformationByIdAsync(2);
+
+            Assert.IsNotNull(camera1);
+            Assert.IsNotNull(camera2);
+            Assert.IsNotNull(camera1.Token);
+            Assert.IsNotNull(camera2.Token);
+
             CameraController controller = new CameraController(cameraRepository);
             using (MemoryStream? stream = await TestUtilities.GetTestFileAsync("MockedCameraImage"))
             {
@@ -66,8 +82,8 @@ namespace CameraServerTests.Tests
                     Assert.Fail("Could not load MockedCameraImage");
 
                 IFormFile image = TestUtilities.GetIFormFile(stream);
-                await controller.UpdateCameraImage(image, 1);
-                await controller.UpdateCameraImage(image, 2);
+                await controller.UpdateCameraImage(image, 1, camera1.Token);
+                await controller.UpdateCameraImage(image, 2, camera2.Token);
             }
 
             using (MemoryStream? stream = await TestUtilities.GetTestFileAsync("MockedCameraImage2"))
@@ -76,7 +92,7 @@ namespace CameraServerTests.Tests
                     Assert.Fail("Could not load MockedCameraImage");
 
                 IFormFile image = TestUtilities.GetIFormFile(stream);
-                await controller.UpdateCameraImage(image, 1);
+                await controller.UpdateCameraImage(image, 1, camera1.Token);
             }
 
             IActionResult imageFromController = await controller.GetCameraImage(1);
@@ -96,6 +112,14 @@ namespace CameraServerTests.Tests
         [TestMethod]
         public async Task UpdateCameraImageFirstTime()
         {
+            CameraInformation? camera1 = await cameraRepository.GetCameraInformationByIdAsync(1);
+            CameraInformation? camera2 = await cameraRepository.GetCameraInformationByIdAsync(2);
+
+            Assert.IsNotNull(camera1);
+            Assert.IsNotNull(camera2);
+            Assert.IsNotNull(camera1.Token);
+            Assert.IsNotNull(camera2.Token);
+
             CameraController controller = new CameraController(cameraRepository);
             using (MemoryStream? stream = await TestUtilities.GetTestFileAsync("MockedCameraImage"))
             {
@@ -103,8 +127,8 @@ namespace CameraServerTests.Tests
                     Assert.Fail("Could not load MockedCameraImage");
 
                 IFormFile image = TestUtilities.GetIFormFile(stream);
-                ObjectResult result1 = await controller.UpdateCameraImage(image, 1);
-                ObjectResult result2 = await controller.UpdateCameraImage(image, 2);
+                ObjectResult result1 = await controller.UpdateCameraImage(image, 1, camera1.Token);
+                ObjectResult result2 = await controller.UpdateCameraImage(image, 2, camera2.Token);
 
                 Assert.IsNotNull(result1);
                 Assert.IsNotNull(result2);
@@ -120,6 +144,14 @@ namespace CameraServerTests.Tests
         [TestMethod]
         public async Task UpdateCameraImageOverwrite()
         {
+            CameraInformation? camera1 = await cameraRepository.GetCameraInformationByIdAsync(1);
+            CameraInformation? camera2 = await cameraRepository.GetCameraInformationByIdAsync(2);
+
+            Assert.IsNotNull(camera1);
+            Assert.IsNotNull(camera2);
+            Assert.IsNotNull(camera1.Token);
+            Assert.IsNotNull(camera2.Token);
+
             CameraController controller = new CameraController(cameraRepository);
             using (MemoryStream? stream = await TestUtilities.GetTestFileAsync("MockedCameraImage"))
             {
@@ -127,8 +159,8 @@ namespace CameraServerTests.Tests
                     Assert.Fail("Could not load MockedCameraImage");
 
                 IFormFile image = TestUtilities.GetIFormFile(stream);
-                ObjectResult result1 = await controller.UpdateCameraImage(image, 1);
-                ObjectResult result2 = await controller.UpdateCameraImage(image, 2);
+                ObjectResult result1 = await controller.UpdateCameraImage(image, 1, camera1.Token);
+                ObjectResult result2 = await controller.UpdateCameraImage(image, 2, camera2.Token);
 
                 Assert.IsNotNull(result1);
                 Assert.IsNotNull(result2);
@@ -146,7 +178,7 @@ namespace CameraServerTests.Tests
                     Assert.Fail("Could not load MockedCameraImage");
 
                 IFormFile image = TestUtilities.GetIFormFile(stream);
-                ObjectResult result1 = await controller.UpdateCameraImage(image, 1);
+                ObjectResult result1 = await controller.UpdateCameraImage(image, 1, camera1.Token);
 
                 Assert.IsNotNull(result1);
                 Assert.AreEqual(200, result1.StatusCode);
