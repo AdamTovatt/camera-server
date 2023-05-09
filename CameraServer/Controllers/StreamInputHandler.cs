@@ -52,7 +52,7 @@ namespace CameraServer.Controllers
                     result = await socket.ReceiveAsync(new ArraySegment<byte>(cameraId), CancellationToken.None);
 
                     if (!CameraContainer.Instance.TryGetCamera(BitConverter.ToInt32(cameraId, 0), out camera)) // Close the stream if we don't get a valid camera id
-                        await socket.CloseAsync(WebSocketCloseStatus.PolicyViolation, $"No camera with id {BitConverter.ToInt32(cameraId, 0)} exists", CancellationToken.None);
+                        await socket.CloseOutputAsync(WebSocketCloseStatus.PolicyViolation, $"No camera with id {BitConverter.ToInt32(cameraId, 0)} exists", CancellationToken.None);
                 }
                 else if(token == null) // Receive the token
                 {
@@ -73,7 +73,7 @@ namespace CameraServer.Controllers
                     token = Encoding.UTF8.GetString(data);
 
                     if (!camera.IsValidToken(token))
-                        await socket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Invalid token", CancellationToken.None);
+                        await socket.CloseOutputAsync(WebSocketCloseStatus.PolicyViolation, "Invalid token", CancellationToken.None);
                 }
                 else // Receive the image data
                 {

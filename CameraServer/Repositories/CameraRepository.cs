@@ -69,7 +69,7 @@ namespace CameraServer.Repositories
                 {
                     using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
                     {
-                        if (await reader.ReadAsync())
+                        while(await reader.ReadAsync())
                         {
                             result.Add(CameraInformation.FromReader(reader));
                         }
