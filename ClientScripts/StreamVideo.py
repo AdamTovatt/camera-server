@@ -88,15 +88,6 @@ while running:
             ws.send_binary(struct.pack('<I', len(data)) + data)
 
             del buffer
-
-            # Wait a little bit to prevent flooding the server
-            time.sleep(0.01)
-            restartTimer += 0.01
-
-            if (restartTimer >= 2):
-                print(
-                    "Max time running reached, will exit and hope for restart by systmctl to try to avoid memory leaks")
-                running = False
     except ConnectionResetError as error:
         print(
             "The established connection to the server was lost, will attempt to reconnect")
