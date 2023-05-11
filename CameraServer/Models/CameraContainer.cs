@@ -1,7 +1,7 @@
 ﻿using CameraServer.Repositories;
 using Sakur.WebApiUtilities.Models;
 
-namespace CameraServer.Helpers
+namespace CameraServer.Models
 {
     public class CameraContainer
     {

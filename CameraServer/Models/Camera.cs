@@ -1,6 +1,6 @@
-﻿using CameraServer.Models;
+﻿using CameraServer.Helpers;
 
-namespace CameraServer.Helpers
+namespace CameraServer.Models
 {
     public class Camera
     {

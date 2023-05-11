@@ -1,4 +1,5 @@
 ﻿using CameraServer.Helpers;
+using CameraServer.Models;
 using Npgsql;
 
 namespace CameraServer.Repositories

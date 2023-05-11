@@ -1,5 +1,5 @@
 ﻿using CameraServer.Controllers;
-using CameraServer.Helpers;
+using CameraServer.Models;
 using CameraServerTests.Mocks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

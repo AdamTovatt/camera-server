@@ -1,4 +1,4 @@
-﻿using CameraServer.Helpers;
+﻿using CameraServer.Models;
 
 namespace CameraServer.Repositories
 {

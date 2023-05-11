@@ -1,12 +1,15 @@
-﻿using Npgsql;
+﻿using CameraServer.Helpers;
+using Npgsql;
+using System.Text.Json.Serialization;
 
-namespace CameraServer.Helpers
+namespace CameraServer.Models
 {
     public class CameraInformation
     {
         public int Id { get; set; }
         public string Name { get; set; }
         public string? Description { get; set; }
+        [JsonIgnore]
         public string? Token { get; set; }
         public DateTime LastActive { get; set; }
         public string? Preview { get; set; }

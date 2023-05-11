@@ -1,4 +1,4 @@
-using CameraServer.Helpers;
+using CameraServer.Models;
 using CameraServer.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Sakur.WebApiUtilities.Models;
