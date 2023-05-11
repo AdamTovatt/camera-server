@@ -34,10 +34,15 @@ namespace CameraServer.Helpers
 
         public bool IsValidToken(string token)
         {
-            if(information == null || information.Token == null)
+            if (information == null || information.Token == null)
                 return false;
 
             return TokenHelper.GetToken(information.Id) == information.Token;
+        }
+
+        public async Task SetPreviewAsync()
+        {
+            Information.Preview = Convert.ToBase64String((await GetImageAsync()).Bytes);
         }
     }
 }

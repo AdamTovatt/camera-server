@@ -37,7 +37,7 @@ namespace CameraServer.Controllers
             if (!CameraContainer.Instance.IsInitialized)
                 await CameraContainer.Instance.InitializeFromRepository(cameraRepository);
 
-            return new ApiResponse(CameraContainer.Instance.GetCameraList());
+            return new ApiResponse(await CameraContainer.Instance.GetCameraListAsync());
         }
 
         [HttpPost("update-image")]
