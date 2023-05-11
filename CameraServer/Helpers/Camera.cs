@@ -42,7 +42,6 @@ namespace CameraServer.Helpers
 
         public async Task SetPreviewAsync()
         {
-            await Task.CompletedTask;
             Information.Preview = Convert.ToBase64String((await GetImageAsync()).Bytes);
         }
     }
