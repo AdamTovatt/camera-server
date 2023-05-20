@@ -1,5 +1,5 @@
 {
-	"cameraId": 1337,
-	"cameraToken": "AISHJDlksjdfsijfpi",
-	"webSocketEndpoint": "ws://127.0.0.1:5000/video-input-stream"
+	"cameraId": 1,
+	"cameraToken": "8e6778b8e631fcfa01650ae1c12e577fd35c893bbcd7ddb247fa63268b4683ed",
+	"webSocketEndpoint": "ws://localhost:5000/video-input-stream"
 }

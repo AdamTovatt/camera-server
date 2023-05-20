@@ -1,4 +1,5 @@
 using CameraServer.Models;
+using CameraServer.Models.RequestBodies;
 using CameraServer.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Sakur.WebApiUtilities.Models;
@@ -89,6 +90,35 @@ namespace CameraServer.Controllers
             }
         }
 
+        [HttpPost("move")]
+        public async Task<IActionResult> MoveCamera([FromBody] MoveCameraBody body)
+        {
+            try
+            {
+                if (!body.Valid)
+                    return new ApiResponse(body.GetInvalidBodyMessage(), HttpStatusCode.BadRequest);
+
+                if (!CameraContainer.Instance.IsInitialized)
+                    await CameraContainer.Instance.InitializeFromRepository(cameraRepository);
+
+                if (CameraContainer.Instance.TryGetCamera(body.CameraId, out Camera? camera))
+                {
+                    if (camera != null)
+                    {
+                        camera.Move(body.DeltaPitch, body.DeltaYaw);
+                        return new ApiResponse(HttpStatusCode.OK);
+                    }
+                }
+
+                return new ApiResponse($"No camera with id {body.CameraId}", HttpStatusCode.BadRequest);
+
+            }
+            catch (ApiException exception)
+            {
+                return new ApiResponse(exception);
+            }
+        }
+
         [HttpGet("stream-image")]
         public async Task StreamImage(int cameraId, int updateDelay = 0)
         {
@@ -97,7 +127,7 @@ namespace CameraServer.Controllers
 
             Response.Headers.Add("Content-Type", "text/event-stream");
             Response.Headers.Add("Cache-Control", "no-cache");
-            Response.Headers.Add("Connection", "keep-alive");
+            //Response.Headers.Add("Connection", "keep-alive");
 
             if (!CameraContainer.Instance.IsInitialized)
                 await CameraContainer.Instance.InitializeFromRepository(cameraRepository);
