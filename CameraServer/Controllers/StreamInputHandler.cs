@@ -51,8 +51,15 @@ namespace CameraServer.Controllers
                     byte[] cameraId = new byte[4];
                     result = await socket.ReceiveAsync(new ArraySegment<byte>(cameraId), CancellationToken.None);
 
-                    if (!CameraContainer.Instance.TryGetCamera(BitConverter.ToInt32(cameraId, 0), out camera)) // Close the stream if we don't get a valid camera id
+                    if (CameraContainer.Instance.TryGetCamera(BitConverter.ToInt32(cameraId, 0), out camera))
+                    {
+                        if (camera != null)
+                            camera.SetConnection(socket);
+                    }
+                    else // close the stream if we don't get a valid camera id
+                    {
                         await socket.CloseOutputAsync(WebSocketCloseStatus.PolicyViolation, $"No camera with id {BitConverter.ToInt32(cameraId, 0)} exists", CancellationToken.None);
+                    }
                 }
                 else if(token == null) // Receive the token
                 {
@@ -95,6 +102,8 @@ namespace CameraServer.Controllers
 
                     if (data.Length > 0)
                         camera.SetImage(data);
+
+                    await camera.SubmitResponse();
                 }
             }
             while (!result.CloseStatus.HasValue);
