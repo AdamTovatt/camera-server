@@ -68,8 +68,8 @@ while running:
             cap.release()
 
         # Initialize the face detection
-        face_cascade = cv2.CascadeClassifier(
-            cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+        ##face_cascade = cv2.CascadeClassifier(
+        ##    cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
         # Open the camera
         cap = cv2.VideoCapture(0)
@@ -84,11 +84,11 @@ while running:
             if not ret:
                 break
 
-            gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            faces = face_cascade.detectMultiScale(gray_frame, 1.3, 5)
+            ##gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            ##faces = face_cascade.detectMultiScale(gray_frame, 1.3, 5)
 
-            for (x, y, w, h) in faces:
-                cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+            ##for (x, y, w, h) in faces:
+            ##    cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
 
             # Encode the frame as JPG (I think H.264 could yield performance improvements but I couldn't get the encoding to work)
             encoded, buffer = cv2.imencode('.jpg', frame)
