@@ -63,7 +63,7 @@ namespace CameraServer.Models
             queuedMovement.Clear();
         }
 
-        public void Move(int deltaPitch, int deltaYaw)
+        public void Move(float deltaPitch, float deltaYaw)
         {
             queuedMovement.DeltaPitch += deltaPitch;
             queuedMovement.DeltaYaw += deltaYaw;
