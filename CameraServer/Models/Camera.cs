@@ -67,17 +67,10 @@ namespace CameraServer.Models
             queuedMovement.Clear();
         }
 
-        public void Move(float deltaPitch, float deltaYaw)
+        public void Move(float newPitch, float newYaw)
         {
-            oldMovementQueue = DateTime.UtcNow; // set oldMovementQueue to now
-            float passedTime = (float)(oldMovementQueue - currentMovementQueue).TotalSeconds;
-            currentMovementQueue = oldMovementQueue;
-
-            if (passedTime > 0.1f)
-                passedTime = 0.1f;
-
-            queuedMovement.DeltaPitch += deltaPitch * passedTime; // we multiply with passed time to get movement per second instead of movement at an unspecified rate
-            queuedMovement.DeltaYaw += deltaYaw * passedTime;
+            queuedMovement.DeltaPitch += newPitch;
+            queuedMovement.DeltaYaw += newYaw;
             queuedMovement.ContainsValue = true;
         }
 

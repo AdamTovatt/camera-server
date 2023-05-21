@@ -105,7 +105,7 @@ namespace CameraServer.Controllers
                 {
                     if (camera != null)
                     {
-                        camera.Move(body.DeltaPitch, body.DeltaYaw);
+                        camera.Move(body.Pitch, body.Yaw);
                         return new ApiResponse(HttpStatusCode.OK);
                     }
                 }
