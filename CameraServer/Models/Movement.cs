@@ -2,8 +2,8 @@
 {
     public class Movement
     {
-        public int DeltaPitch { get; set; }
-        public int DeltaYaw { get; set; }
+        public float DeltaPitch { get; set; }
+        public float DeltaYaw { get; set; }
         public bool ContainsValue { get; set; }
 
         public void Clear()
