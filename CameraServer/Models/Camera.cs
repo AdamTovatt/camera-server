@@ -7,6 +7,7 @@ namespace CameraServer.Models
     {
         public CameraInformation Information { get { return information; } }
         public bool IsConnected { get { return socketConnection != null && !socketConnection.CloseStatus.HasValue; } }
+        public Movement QueuedMovement { get { return queuedMovement; } }
 
         private CameraImage currentImage;
         private CameraInformation information;
@@ -69,8 +70,11 @@ namespace CameraServer.Models
         public void Move(float deltaPitch, float deltaYaw)
         {
             oldMovementQueue = DateTime.UtcNow; // set oldMovementQueue to now
-            float passedTime = (float)(currentMovementQueue - oldMovementQueue).TotalSeconds;
+            float passedTime = (float)(oldMovementQueue - currentMovementQueue).TotalSeconds;
             currentMovementQueue = oldMovementQueue;
+
+            if (passedTime > 0.1f)
+                passedTime = 0.1f;
 
             queuedMovement.DeltaPitch += deltaPitch * passedTime; // we multiply with passed time to get movement per second instead of movement at an unspecified rate
             queuedMovement.DeltaYaw += deltaYaw * passedTime;
