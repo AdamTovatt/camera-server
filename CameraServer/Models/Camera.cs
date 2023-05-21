@@ -69,8 +69,8 @@ namespace CameraServer.Models
 
         public void Move(float newPitch, float newYaw)
         {
-            queuedMovement.Pitch += newPitch;
-            queuedMovement.Yaw += newYaw;
+            queuedMovement.Pitch = newPitch;
+            queuedMovement.Yaw = newYaw;
             queuedMovement.ContainsValue = true;
         }
 
