@@ -1,5 +1,7 @@
 ﻿using CameraServer.Helpers;
 using System.Net.WebSockets;
+using OpenCvSharp;
+using CameraServer.Providers;
 
 namespace CameraServer.Models
 {
@@ -14,12 +16,18 @@ namespace CameraServer.Models
         private byte[]? queuedData;
 
         private Movement queuedMovement;
+        private CascadeClassifier classifier;
+
+        private Rect[] faces = new Rect[0];
+        private int counter = 0;
 
         public Camera(CameraInformation information)
         {
             this.information = information;
             currentImage = new CameraImage(new byte[0], DateTime.MinValue);
             queuedMovement = new Movement();
+
+            classifier = CascadeProvider.CascadeClassifier;
         }
 
         public void SetImage(byte[] bytes)
@@ -28,6 +36,40 @@ namespace CameraServer.Models
             DateTime time = DateTime.UtcNow;
             currentImage.TimeOfCapture = time;
             information.LastActive = time;
+
+            using (Mat imageMat = Cv2.ImDecode(bytes, ImreadModes.Color))
+            {
+                using (Mat grayMat = new Mat())
+                {
+                    if (counter >= 25)
+                    {
+                        Cv2.CvtColor(imageMat, grayMat, ColorConversionCodes.BGR2GRAY);
+
+                        // Detect faces in the grayscale image
+                        faces = classifier.DetectMultiScale(grayMat);
+
+                        // Draw rectangles around the detected faces
+                        foreach (Rect faceRect in faces)
+                            Cv2.Rectangle(imageMat, faceRect, Scalar.Blue, 2);
+
+                        counter = 0;
+
+                        // Convert the image back to byte[] format
+                        byte[] processedImageData = imageMat.ToBytes(".jpg");
+                        currentImage.Bytes = processedImageData;
+                    }
+                    else
+                    {
+                        foreach (Rect faceRect in faces)
+                            Cv2.Rectangle(imageMat, faceRect, Scalar.Blue, 2);
+
+                        // Convert the image back to byte[] format
+                        byte[] processedImageData = imageMat.ToBytes(".jpg");
+                        currentImage.Bytes = processedImageData;
+                        counter++;
+                    }
+                }
+            }
         }
 
         public async Task<CameraImage> GetImageAsync()
@@ -89,7 +131,7 @@ namespace CameraServer.Models
                 return result;
             }
 
-            if(queuedMovement.ContainsValue)
+            if (queuedMovement.ContainsValue)
             {
                 queuedData = queuedMovement.GetBytes();
                 queuedMovement.Clear();
