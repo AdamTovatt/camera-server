@@ -12,6 +12,8 @@ namespace CameraServer.Models
         private CameraInformation information;
         private WebSocket? socketConnection;
         private byte[]? queuedData;
+        private DateTime currentMovementQueue;
+        private DateTime oldMovementQueue;
 
         private Movement queuedMovement;
 
@@ -20,6 +22,7 @@ namespace CameraServer.Models
             this.information = information;
             currentImage = new CameraImage(new byte[0], DateTime.MinValue);
             queuedMovement = new Movement();
+            currentMovementQueue = DateTime.UtcNow;
         }
 
         public void SetImage(byte[] bytes)
@@ -65,8 +68,12 @@ namespace CameraServer.Models
 
         public void Move(float deltaPitch, float deltaYaw)
         {
-            queuedMovement.DeltaPitch += deltaPitch;
-            queuedMovement.DeltaYaw += deltaYaw;
+            oldMovementQueue = DateTime.UtcNow; // set oldMovementQueue to now
+            float passedTime = (float)(currentMovementQueue - oldMovementQueue).TotalSeconds;
+            currentMovementQueue = oldMovementQueue;
+
+            queuedMovement.DeltaPitch += deltaPitch * passedTime; // we multiply with passed time to get movement per second instead of movement at an unspecified rate
+            queuedMovement.DeltaYaw += deltaYaw * passedTime;
             queuedMovement.ContainsValue = true;
         }
 
@@ -89,7 +96,7 @@ namespace CameraServer.Models
                 return result;
             }
 
-            if(queuedMovement.ContainsValue)
+            if (queuedMovement.ContainsValue)
             {
                 queuedData = queuedMovement.GetBytes();
                 queuedMovement.Clear();
