@@ -2,21 +2,21 @@
 {
     public class Movement
     {
-        public float DeltaPitch { get; set; }
-        public float DeltaYaw { get; set; }
+        public float Pitch { get; set; }
+        public float Yaw { get; set; }
         public bool ContainsValue { get; set; }
 
         public void Clear()
         {
-            DeltaPitch = 0;
-            DeltaYaw = 0;
+            Pitch = 0;
+            Yaw = 0;
             ContainsValue = false;
         }
 
         public byte[] GetBytes()
         {
-            byte[] pitchBytes = BitConverter.GetBytes(DeltaPitch);
-            byte[] yawBytes = BitConverter.GetBytes(DeltaYaw);
+            byte[] pitchBytes = BitConverter.GetBytes(Pitch);
+            byte[] yawBytes = BitConverter.GetBytes(Yaw);
 
             byte[] byteArray = new byte[pitchBytes.Length + yawBytes.Length];
             Array.Copy(pitchBytes, 0, byteArray, 0, pitchBytes.Length);

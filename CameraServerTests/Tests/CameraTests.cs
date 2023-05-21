@@ -38,7 +38,7 @@ namespace CameraServerTests.Tests
             DateTime stop = DateTime.UtcNow;
             float time = (float)(stop - start).TotalSeconds;
 
-            float difference = (time * 0.8f - camera.QueuedMovement.DeltaPitch);
+            float difference = (time * 0.8f - camera.QueuedMovement.Pitch);
             Assert.IsTrue(difference < differenceThreshold, $"{difference} is not withing threshold of {differenceThreshold}");
         }
     }
