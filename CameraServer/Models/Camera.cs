@@ -34,6 +34,11 @@ namespace CameraServer.Models
             information.LastActive = time;
         }
 
+        public byte[] GetImageBytes()
+        {
+            return currentImage.Bytes;
+        }
+
         public async Task<CameraImage> GetImageAsync()
         {
             if (currentImage == null)
