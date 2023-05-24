@@ -1,3 +1,4 @@
+import threading
 import cv2
 import websocket
 import struct
@@ -9,6 +10,7 @@ import numpy as np
 import cv2
 import av
 import io
+
 
 class CameraConfig:
     def __init__(self, cameraId, cameraToken, webSocketEndpoint):
@@ -26,6 +28,7 @@ class CameraConfig:
         backend_url = config_data['webSocketEndpoint']
 
         return CameraConfig(camera_id, camera_token, backend_url)
+
 
 def SendFrames(frames):
     output_memory_file = io.BytesIO()
@@ -47,10 +50,15 @@ def SendFrames(frames):
     output.close()
 
     data = output_memory_file.getvalue()
-    ws.send_binary(struct.pack('<I', len(data)) + data)
+
+    try:
+        ws.send_binary(struct.pack('<I', len(data)) + data)
+    except ConnectionAbortedError as error:
+        print(error)
 
     output_memory_file.close()
     frames.clear()
+
 
 configPath = "camera-config.json"
 
@@ -107,20 +115,24 @@ while running:
             ret, frame = cap.read()
             if not ret:
                 break
-          
+
             frames.append(frame)
             frameCount += 1
 
-            if(frameCount >= 30):
+            if (frameCount >= 30):
                 frameCount = 0
-                SendFrames(frames)
+                thread = threading.Thread(
+                    target=SendFrames, args=(frames.copy(),))
+                thread.start()
+                frames.clear()
 
+            # time.sleep(0.1)
             # Encode the frame as JPG (I think H.264 could yield performance improvements but I couldn't get the encoding to work)
-            #encoded, buffer = cv2.imencode('.jpg', frame)
-            #data = buffer.tobytes()
+            # encoded, buffer = cv2.imencode('.jpg', frame)
+            # data = buffer.tobytes()
 
             # Send the video chunk to the server
-            #ws.send_binary(struct.pack('<I', len(data)) + data)
+            # ws.send_binary(struct.pack('<I', len(data)) + data)
     except ConnectionResetError as error:
         print(
             "The established connection to the server was lost, will attempt to reconnect")
