@@ -42,6 +42,7 @@ namespace CameraServer.Controllers
         {
             WebSocketReceiveResult? result;
             Camera? camera = null;
+            long previousTimeOfCapture = 0;
 
             do
             {
@@ -62,16 +63,14 @@ namespace CameraServer.Controllers
                 }
                 else // send the image data
                 {
-                    // receive the size of the image data
-                    byte[] sizeBuffer = new byte[1];
-                    result = await socket.ReceiveAsync(new ArraySegment<byte>(sizeBuffer), CancellationToken.None);
-
-                    await socket.SendAsync(new ArraySegment<byte>(camera.GetImageBytes()), WebSocketMessageType.Binary, true, CancellationToken.None);           
+                    byte[] bytes = await camera.GetNextImageBytesAsync(previousTimeOfCapture);
+                    previousTimeOfCapture = camera.LastTimeOfCapture;
+                    await socket.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Binary, true, CancellationToken.None);
                 }
             }
-            while (!result.CloseStatus.HasValue);
+            while (!socket.CloseStatus.HasValue);
 
-            await socket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
+            await socket.CloseAsync(socket.CloseStatus.Value, socket.CloseStatusDescription, CancellationToken.None);
         }
     }
 }

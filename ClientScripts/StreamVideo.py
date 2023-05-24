@@ -1,3 +1,4 @@
+import threading
 import cv2
 import websocket
 import struct
@@ -5,6 +6,10 @@ import time
 import json
 import os
 import socket
+import numpy as np
+import cv2
+import av
+import io
 
 
 class CameraConfig:
@@ -23,6 +28,36 @@ class CameraConfig:
         backend_url = config_data['webSocketEndpoint']
 
         return CameraConfig(camera_id, camera_token, backend_url)
+
+
+def SendFrames(frames):
+    output_memory_file = io.BytesIO()
+    output = av.open(output_memory_file, 'w', format="mp4")
+    stream = output.add_stream('h264', str(30))
+    stream.width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+    stream.height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+    stream.pix_fmt = 'yuv420p'
+    stream.options = {'crf': '17'}
+
+    for frameData in frames:
+        # write frame to output
+        frame = av.VideoFrame.from_ndarray(frameData, format='bgr24')
+        packet = stream.encode(frame)
+        output.mux(packet)
+
+    packet = stream.encode(None)
+    output.mux(packet)
+    output.close()
+
+    data = output_memory_file.getvalue()
+
+    try:
+        ws.send_binary(struct.pack('<I', len(data)) + data)
+    except ConnectionAbortedError as error:
+        print(error)
+
+    output_memory_file.close()
+    frames.clear()
 
 
 configPath = "camera-config.json"
@@ -72,7 +107,8 @@ while running:
 
         print("Video capture started, will start sending video")
 
-        restartTimer = 0
+        frames = []
+        frameCount = 0
 
         # Capture and encode the video
         while running:
@@ -80,14 +116,23 @@ while running:
             if not ret:
                 break
 
+            frames.append(frame)
+            frameCount += 1
+
+            if (frameCount >= 30):
+                frameCount = 0
+                thread = threading.Thread(
+                    target=SendFrames, args=(frames.copy(),))
+                thread.start()
+                frames.clear()
+
+            # time.sleep(0.1)
             # Encode the frame as JPG (I think H.264 could yield performance improvements but I couldn't get the encoding to work)
-            encoded, buffer = cv2.imencode('.jpg', frame)
-            data = buffer.tobytes()
+            # encoded, buffer = cv2.imencode('.jpg', frame)
+            # data = buffer.tobytes()
 
             # Send the video chunk to the server
-            ws.send_binary(struct.pack('<I', len(data)) + data)
-
-            del buffer
+            # ws.send_binary(struct.pack('<I', len(data)) + data)
     except ConnectionResetError as error:
         print(
             "The established connection to the server was lost, will attempt to reconnect")
