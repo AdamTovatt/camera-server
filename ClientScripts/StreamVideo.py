@@ -95,6 +95,7 @@ def SendFrames(frames):
     end_time = time.time()  # Get the end time
     elapsed_time = end_time - start_time
     print("Closing took:", elapsed_time, "seconds")
+    print("MP4 DATA SIZE:", len(data), "bytes")
 
 
 configPath = "camera-config.json"
@@ -170,7 +171,21 @@ while running:
                 elapsed_time = end_time - start_time
                 print("Converting took:", elapsed_time, "seconds")
 
+                rawDataSize = 0
+                jpgDataSize = 0
+                for frameData in frames:
+                    rawDataSize += len(frameData)
+                    encoded, buffer = cv2.imencode('.jpg', frameData)
+                    data = buffer.tobytes()
+                    jpgDataSize += len(data)
+
                 frames.clear()
+
+                print("Raw DATA SIZE:", rawDataSize, "bytes")
+                print("JPG DATA SIZE:", jpgDataSize, "bytes")
+
+                print("shutting down by setting running to false")
+                running = False
 
             # time.sleep(0.1)
             # Encode the frame as JPG (I think H.264 could yield performance improvements but I couldn't get the encoding to work)
