@@ -31,6 +31,9 @@ class CameraConfig:
 
 
 def SendFrames(frames):
+    print("will setup video encoder")
+    start_time = time.time()  # Get the start time
+
     output_memory_file = io.BytesIO()
     output = av.open(output_memory_file, 'w', format="mp4")
     stream = output.add_stream('h264', str(30))
@@ -38,6 +41,14 @@ def SendFrames(frames):
     stream.height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
     stream.pix_fmt = 'yuv420p'
     stream.options = {'crf': '17'}
+
+    end_time = time.time()  # Get the end time
+    elapsed_time = end_time - start_time
+
+    print("Setup took:", elapsed_time, "seconds")
+    print("will start encoding")
+
+    start_time = time.time()  # Get the start time
 
     for frameData in frames:
         # write frame to output
@@ -47,17 +58,43 @@ def SendFrames(frames):
 
     packet = stream.encode(None)
     output.mux(packet)
-    output.close()
+
+    end_time = time.time()  # Get the end time
+    elapsed_time = end_time - start_time
+
+    print("Encoding and muxing took:", elapsed_time, "seconds")
+    print("Wil get the data from the memory file")
+    start_time = time.time()  # Get the start time
 
     data = output_memory_file.getvalue()
+
+    end_time = time.time()  # Get the end time
+    elapsed_time = end_time - start_time
+
+    print("Getting data took:", elapsed_time, "seconds")
+    print("Will send the data")
+    start_time = time.time()  # Get the start time
 
     try:
         ws.send_binary(struct.pack('<I', len(data)) + data)
     except ConnectionAbortedError as error:
         print(error)
 
+    end_time = time.time()  # Get the end time
+    elapsed_time = end_time - start_time
+
+    print("Sending took:", elapsed_time, "seconds")
+    print("Will close the output file")
+    start_time = time.time()  # Get the start time
+
+    output.close()
     output_memory_file.close()
+
     frames.clear()
+
+    end_time = time.time()  # Get the end time
+    elapsed_time = end_time - start_time
+    print("Closing took:", elapsed_time, "seconds")
 
 
 configPath = "camera-config.json"
@@ -121,9 +158,18 @@ while running:
 
             if (frameCount >= 30):
                 frameCount = 0
-                thread = threading.Thread(
-                    target=SendFrames, args=(frames.copy(),))
-                thread.start()
+                SendFrames(frames.copy())
+
+                print("Will convert frames to jpg for comparison: \n")
+                start_time = time.time()  # Get the start time
+                for frameData in frames:
+                    encoded, buffer = cv2.imencode('.jpg', frameData)
+                    data = buffer.tobytes()
+
+                end_time = time.time()  # Get the end time
+                elapsed_time = end_time - start_time
+                print("Converting took:", elapsed_time, "seconds")
+
                 frames.clear()
 
             # time.sleep(0.1)
