@@ -9,6 +9,8 @@ namespace CameraServer.Models
         public bool IsConnected { get { return socketConnection != null && !socketConnection.CloseStatus.HasValue; } }
         public Movement QueuedMovement { get { return queuedMovement; } }
 
+        public long LastTimeOfCapture { get { return lastTimeOfCapture; } }
+
         public delegate void ImageUpdated();
         public event ImageUpdated? OnImageUpdated;
 
@@ -16,6 +18,7 @@ namespace CameraServer.Models
         private CameraInformation information;
         private WebSocket? socketConnection;
         private byte[]? queuedData;
+        private long lastTimeOfCapture;
 
         private Movement queuedMovement;
 
@@ -32,6 +35,15 @@ namespace CameraServer.Models
             DateTime time = DateTime.UtcNow;
             currentImage.TimeOfCapture = time;
             information.LastActive = time;
+            lastTimeOfCapture = time.Ticks;
+        }
+
+        public async Task<byte[]> GetNextImageBytesAsync(long previousTimeOfCapture)
+        {
+            while(lastTimeOfCapture == previousTimeOfCapture)
+                await Task.Delay(30);
+
+            return currentImage.Bytes;
         }
 
         public byte[] GetImageBytes()
