@@ -60,7 +60,7 @@ namespace CameraServer.Controllers
                         cameraId = 1;
                     }
 
-                    if (!CameraContainer.Instance.TryGetCamera(, out camera)) // close the stream if we don't get a valid camera id
+                    if (!CameraContainer.Instance.TryGetCamera(cameraId, out camera)) // close the stream if we don't get a valid camera id
                     {
                         await socket.CloseOutputAsync(WebSocketCloseStatus.PolicyViolation, $"No camera with id {cameraId} exists", CancellationToken.None);
                     }
