@@ -42,7 +42,6 @@ namespace CameraServer.Controllers
         {
             WebSocketReceiveResult? result;
             Camera? camera = null;
-            long previousTimeOfCapture = 0;
 
             do
             {
@@ -63,9 +62,7 @@ namespace CameraServer.Controllers
                 }
                 else // send the image data
                 {
-                    byte[] bytes = await camera.GetNextImageBytesAsync(previousTimeOfCapture);
-                    previousTimeOfCapture = camera.LastTimeOfCapture;
-                    await socket.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Binary, true, CancellationToken.None);
+                    await socket.SendAsync(new ArraySegment<byte>(camera.GetImageBytes()), WebSocketMessageType.Binary, true, CancellationToken.None);
                 }
             }
             while (!socket.CloseStatus.HasValue);
