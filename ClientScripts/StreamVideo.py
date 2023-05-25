@@ -72,18 +72,18 @@ def SendFrames(frames):
     elapsed_time = end_time - start_time
 
     print("Getting data took:", elapsed_time, "seconds")
-    print("Will send the data")
-    start_time = time.time()  # Get the start time
+    # print("Will send the data")
+    # start_time = time.time()  # Get the start time
 
-    try:
-        ws.send_binary(struct.pack('<I', len(data)) + data)
-    except ConnectionAbortedError as error:
-        print(error)
+    # try:
+    #    ws.send_binary(struct.pack('<I', len(data)) + data)
+    # except ConnectionAbortedError as error:
+    #    print(error)
 
-    end_time = time.time()  # Get the end time
-    elapsed_time = end_time - start_time
+    # end_time = time.time()  # Get the end time
+    # elapsed_time = end_time - start_time
 
-    print("Sending took:", elapsed_time, "seconds")
+    # print("Sending took:", elapsed_time, "seconds")
     print("Will close the output file")
     start_time = time.time()  # Get the start time
 
@@ -158,8 +158,16 @@ while running:
             frameCount += 1
 
             if (frameCount >= 30):
-                frameCount = 0
-                SendFrames(frames.copy())
+                rawDataSize = 0
+                jpgDataSize = 0
+                for frameData in frames:
+                    rawDataSize += len(frameData)
+                    encoded, buffer = cv2.imencode('.jpg', frameData)
+                    data = buffer.tobytes()
+                    jpgDataSize += len(data)
+
+                print("Raw DATA SIZE:", rawDataSize, "bytes")
+                print("JPG DATA SIZE:", jpgDataSize, "bytes")
 
                 print("Will convert frames to jpg for comparison: \n")
                 start_time = time.time()  # Get the start time
@@ -171,18 +179,10 @@ while running:
                 elapsed_time = end_time - start_time
                 print("Converting took:", elapsed_time, "seconds")
 
-                rawDataSize = 0
-                jpgDataSize = 0
-                for frameData in frames:
-                    rawDataSize += len(frameData)
-                    encoded, buffer = cv2.imencode('.jpg', frameData)
-                    data = buffer.tobytes()
-                    jpgDataSize += len(data)
+                frameCount = 0
+                SendFrames(frames.copy())
 
                 frames.clear()
-
-                print("Raw DATA SIZE:", rawDataSize, "bytes")
-                print("JPG DATA SIZE:", jpgDataSize, "bytes")
 
                 print("shutting down by setting running to false")
                 running = False
