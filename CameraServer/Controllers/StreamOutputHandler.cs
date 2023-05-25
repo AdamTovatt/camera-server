@@ -43,22 +43,35 @@ namespace CameraServer.Controllers
             WebSocketReceiveResult? result;
             Camera? camera = null;
             long previousTimeOfCapture = 0;
+            bool useBase64 = false;
 
             do
             {
                 if (camera == null) // Receive the camera id
                 {
-                    byte[] cameraId = new byte[4];
-                    result = await socket.ReceiveAsync(new ArraySegment<byte>(cameraId), CancellationToken.None);
+                    byte[] cameraIdBytes = new byte[4];
+                    result = await socket.ReceiveAsync(new ArraySegment<byte>(cameraIdBytes), CancellationToken.None);
 
-                    if (!CameraContainer.Instance.TryGetCamera(BitConverter.ToInt32(cameraId, 0), out camera)) // close the stream if we don't get a valid camera id
+                    int cameraId = BitConverter.ToInt32(cameraIdBytes, 0);
+
+                    if (cameraId == 7)
                     {
-                        await socket.CloseOutputAsync(WebSocketCloseStatus.PolicyViolation, $"No camera with id {BitConverter.ToInt32(cameraId, 0)} exists", CancellationToken.None);
+                        useBase64 = true;
+                        cameraId = 1;
+                    }
+
+                    if (!CameraContainer.Instance.TryGetCamera(, out camera)) // close the stream if we don't get a valid camera id
+                    {
+                        await socket.CloseOutputAsync(WebSocketCloseStatus.PolicyViolation, $"No camera with id {cameraId} exists", CancellationToken.None);
                     }
                 }
                 else // send the image data
                 {
                     byte[] bytes = await camera.GetNextImageBytesAsync(previousTimeOfCapture);
+
+                    if(useBase64)
+                        bytes = UTF8Encoding.UTF8.GetBytes(Convert.ToBase64String(bytes));
+
                     previousTimeOfCapture = camera.LastTimeOfCapture;
                     await socket.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Binary, true, CancellationToken.None);
                 }
