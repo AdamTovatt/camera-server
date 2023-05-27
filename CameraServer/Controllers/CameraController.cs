@@ -90,35 +90,6 @@ namespace CameraServer.Controllers
             }
         }
 
-        [HttpPost("move")]
-        public async Task<IActionResult> MoveCamera([FromBody] MoveCameraBody body)
-        {
-            try
-            {
-                if (!body.Valid)
-                    return new ApiResponse(body.GetInvalidBodyMessage(), HttpStatusCode.BadRequest);
-
-                if (!CameraContainer.Instance.IsInitialized)
-                    await CameraContainer.Instance.InitializeFromRepository(cameraRepository);
-
-                if (CameraContainer.Instance.TryGetCamera(body.CameraId, out Camera? camera))
-                {
-                    if (camera != null)
-                    {
-                        camera.Move(body.Pitch, body.Yaw);
-                        return new ApiResponse(HttpStatusCode.OK);
-                    }
-                }
-
-                return new ApiResponse($"No camera with id {body.CameraId}", HttpStatusCode.BadRequest);
-
-            }
-            catch (ApiException exception)
-            {
-                return new ApiResponse(exception);
-            }
-        }
-
         [HttpGet("stream-image")]
         public async Task StreamImage(int cameraId, int updateDelay = 0)
         {
