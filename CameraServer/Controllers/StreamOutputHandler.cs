@@ -1,6 +1,7 @@
 ﻿using CameraServer.Models;
 using CameraServer.Repositories;
 using Microsoft.AspNet.SignalR.WebSockets;
+using System;
 using System.Net.WebSockets;
 using System.Text;
 
@@ -40,28 +41,66 @@ namespace CameraServer.Controllers
 
         private async Task HandleWebSocket(WebSocket socket)
         {
-            WebSocketReceiveResult? result;
             Camera? camera = null;
-            long previousTimeOfCapture = 0;
-            bool useBase64 = false;
 
-            OutputClientInfo? clientInfo = await OutputClientInfo.ReceiveAsync(socket);
-
-            do
+            Camera.ImageUpdated broadCastNewImage = async (object sender, ArraySegment<byte> bytes) =>
             {
-                    byte[] bytes = await camera.GetNextImageBytesAsync(previousTimeOfCapture);
+                await socket.SendAsync(bytes, WebSocketMessageType.Binary, true, CancellationToken.None);
+            };
 
-                    if(useBase64)
-                        bytes = UTF8Encoding.UTF8.GetBytes(Convert.ToBase64String(bytes));
+            try
+            {
+                OutputClientInfo? clientInfo = await OutputClientInfo.ReceiveAsync(socket);
 
-                    previousTimeOfCapture = camera.LastTimeOfCapture;
-                    await socket.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Binary, true, CancellationToken.None);
+                if (clientInfo == null || !clientInfo.IsValid) // ensure that we got a valid client info
+                {
+                    await socket.CloseAsync(WebSocketCloseStatus.InvalidPayloadData, "Invalid client info", CancellationToken.None);
+                    return;
+                }
+
+                if (!CameraContainer.Instance.TryGetCamera(clientInfo.CameraId, out camera) || camera == null) // ensure that the camera exists
+                {
+                    await socket.CloseAsync(WebSocketCloseStatus.PolicyViolation, $"No camera with id {clientInfo.CameraId} exists", CancellationToken.None);
+                    return;
+                }
+
+                if (!camera.UserIsAllowed(clientInfo.Token!)) // ensure that the user is allowed for this camera
+                {
+                    await socket.CloseAsync(WebSocketCloseStatus.PolicyViolation, $"No camera with id {clientInfo.CameraId} exists", CancellationToken.None);
+                    return;
+                }
+
+                camera.OnImageUpdated += broadCastNewImage;
+
+                byte[] byteBuffer = new byte[1024]; // 100 KB buffer
+
+                while (true) // this loop is constantly waiting for messages from the front end to send to the camera
+                {
+                    ArraySegment<byte> bufferSegment = new ArraySegment<byte>(byteBuffer);
+
+                    if (socket.CloseStatus.HasValue) // break immediately if the socket has been closed
+                        break;
+
+                    if (bufferSegment.Count == 0 || bufferSegment.Array == null)
+                        continue; // if we didn't get any data, skip this "message" (that was empty anyway) and wait for the next one
+
+                    MessageToCameraClient messageToCameraClient = MessageToCameraClient.FromBytes(bufferSegment.Array);
+
+                    if (messageToCameraClient.Type != MessageToCameraClient.MessageType.Invalid)
+                        await camera.SendMessageToCameraClient(messageToCameraClient);
+                }
+
+                await socket.CloseAsync(socket.CloseStatus.Value, socket.CloseStatusDescription, CancellationToken.None);
             }
-            while (!socket.CloseStatus.HasValue);
-
-            await socket.CloseAsync(socket.CloseStatus.Value, socket.CloseStatusDescription, CancellationToken.None);
+            catch
+            {
+                throw;
+            }
+            finally // we want to make sure we always unsubscribe from the camera's OnImageUpdated event when we're done
+            {
+                if (camera != null)
+                    camera.OnImageUpdated -= broadCastNewImage;
+            }
         }
-
-        private 
     }
 }

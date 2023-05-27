@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using CameraServer.Helpers;
+using Newtonsoft.Json;
 using System.Net.WebSockets;
 using System.Text;
 
@@ -31,23 +32,14 @@ namespace CameraServer.Models
             return JsonConvert.DeserializeObject<OutputClientInfo>(json);
         }
 
-        public static async Task<OutputClientInfo> ReceiveAsync(WebSocket socket)
+        public static async Task<OutputClientInfo?> ReceiveAsync(WebSocket socket)
         {
-            byte[] cameraIdBytes = new byte[4];
-            result = await socket.ReceiveAsync(new ArraySegment<byte>(cameraIdBytes), CancellationToken.None);
+            int messageLength = await socket.ReceiveIntAsync();
 
-            int cameraId = BitConverter.ToInt32(cameraIdBytes, 0);
+            byte[] messageBytes = new byte[messageLength];
+            await socket.ReceiveAsync(messageBytes, CancellationToken.None);
 
-            if (cameraId == 7)
-            {
-                useBase64 = true;
-                cameraId = 1;
-            }
-
-            if (!CameraContainer.Instance.TryGetCamera(cameraId, out camera)) // close the stream if we don't get a valid camera id
-            {
-                await socket.CloseOutputAsync(WebSocketCloseStatus.PolicyViolation, $"No camera with id {cameraId} exists", CancellationToken.None);
-            }
+            return OutputClientInfo.FromBytes(messageBytes);
         }
     }
 }

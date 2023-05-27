@@ -11,7 +11,7 @@ namespace CameraServer.Models
 
         public long LastTimeOfCapture { get { return lastTimeOfCapture; } }
 
-        public delegate void ImageUpdated();
+        public delegate void ImageUpdated(object sender, ArraySegment<byte> bytes);
         public event ImageUpdated? OnImageUpdated;
 
         private CameraImage currentImage;
@@ -36,11 +36,13 @@ namespace CameraServer.Models
             currentImage.TimeOfCapture = time;
             information.LastActive = time;
             lastTimeOfCapture = time.Ticks;
+
+            OnImageUpdated?.Invoke(this, new ArraySegment<byte>(bytes)); // invoke the OnImageUpdated event if it exists
         }
 
         public async Task<byte[]> GetNextImageBytesAsync(long previousTimeOfCapture)
         {
-            while(lastTimeOfCapture == previousTimeOfCapture)
+            while (lastTimeOfCapture == previousTimeOfCapture)
                 await Task.Delay(30);
 
             return currentImage.Bytes;
@@ -101,6 +103,20 @@ namespace CameraServer.Models
             return true;
         }
 
+        public async Task<bool> SendMessageToCameraClient(MessageToCameraClient message)
+        {
+            if (!IsConnected)
+                return false;
+
+            byte[]? messageBytes = message.GetBytes();
+
+            if (messageBytes == null)
+                return false;
+
+            await socketConnection!.SendAsync(messageBytes, WebSocketMessageType.Binary, true, CancellationToken.None);
+            return true;
+        }
+
         public async Task<bool> SubmitResponse()
         {
             if (queuedData != null)
@@ -120,6 +136,11 @@ namespace CameraServer.Models
             }
 
             return await SendBytesAsync(new byte[0]);
+        }
+
+        public bool UserIsAllowed(string token)
+        {
+            return true; // needs to be implemented in a better way obviously
         }
     }
 }
