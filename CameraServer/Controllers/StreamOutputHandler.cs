@@ -45,28 +45,10 @@ namespace CameraServer.Controllers
             long previousTimeOfCapture = 0;
             bool useBase64 = false;
 
+            OutputClientInfo? clientInfo = await OutputClientInfo.ReceiveAsync(socket);
+
             do
             {
-                if (camera == null) // Receive the camera id
-                {
-                    byte[] cameraIdBytes = new byte[4];
-                    result = await socket.ReceiveAsync(new ArraySegment<byte>(cameraIdBytes), CancellationToken.None);
-
-                    int cameraId = BitConverter.ToInt32(cameraIdBytes, 0);
-
-                    if (cameraId == 7)
-                    {
-                        useBase64 = true;
-                        cameraId = 1;
-                    }
-
-                    if (!CameraContainer.Instance.TryGetCamera(cameraId, out camera)) // close the stream if we don't get a valid camera id
-                    {
-                        await socket.CloseOutputAsync(WebSocketCloseStatus.PolicyViolation, $"No camera with id {cameraId} exists", CancellationToken.None);
-                    }
-                }
-                else // send the image data
-                {
                     byte[] bytes = await camera.GetNextImageBytesAsync(previousTimeOfCapture);
 
                     if(useBase64)
@@ -74,11 +56,12 @@ namespace CameraServer.Controllers
 
                     previousTimeOfCapture = camera.LastTimeOfCapture;
                     await socket.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Binary, true, CancellationToken.None);
-                }
             }
             while (!socket.CloseStatus.HasValue);
 
             await socket.CloseAsync(socket.CloseStatus.Value, socket.CloseStatusDescription, CancellationToken.None);
         }
+
+        private 
     }
 }
