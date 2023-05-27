@@ -36,10 +36,13 @@ namespace CameraServer.Models
         {
             int messageLength = await socket.ReceiveIntAsync();
 
+            if (messageLength == 0 || messageLength > 1024)
+                return null;
+
             byte[] messageBytes = new byte[messageLength];
             await socket.ReceiveAsync(messageBytes, CancellationToken.None);
 
-            return OutputClientInfo.FromBytes(messageBytes);
+            return FromBytes(messageBytes);
         }
     }
 }

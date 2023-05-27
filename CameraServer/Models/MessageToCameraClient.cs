@@ -12,12 +12,12 @@
 
         public MessageType Type { get; set; }
         
-        private int moveX { get; set; }
-        private int moveY { get; set; }
+        private float moveX { get; set; }
+        private float moveY { get; set; }
 
         public MessageToCameraClient() { }
 
-        public MessageToCameraClient(int moveX, int moveY)
+        public MessageToCameraClient(float moveX, float moveY)
         {
             Type = MessageType.MoveInformation;
             this.moveX = moveX;
@@ -38,11 +38,8 @@
 
             if(messageType == MessageType.MoveInformation)
             {
-                if(bytes.Length != 12)
-                    return InvalidMessage;
-
-                int moveX = BitConverter.ToInt32(bytes, 4);
-                int moveY = BitConverter.ToInt32(bytes, 8);
+                float moveX = BitConverter.ToSingle(BitConverter.GetBytes(System.Net.IPAddress.NetworkToHostOrder(BitConverter.ToInt32(bytes, 4))), 0);
+                float moveY = BitConverter.ToSingle(BitConverter.GetBytes(System.Net.IPAddress.NetworkToHostOrder(BitConverter.ToInt32(bytes, 8))), 0);
 
                 return new MessageToCameraClient(moveX, moveY);
             }

@@ -72,11 +72,12 @@ namespace CameraServer.Controllers
 
                 camera.OnImageUpdated += broadCastNewImage;
 
-                byte[] byteBuffer = new byte[1024]; // 100 KB buffer
+                byte[] byteBuffer = new byte[12]; // 12 byte buffer (increase this if larger messages will be sent, right now it's only move information that is sent)
+                ArraySegment<byte> bufferSegment = new ArraySegment<byte>(byteBuffer);
 
                 while (true) // this loop is constantly waiting for messages from the front end to send to the camera
-                {
-                    ArraySegment<byte> bufferSegment = new ArraySegment<byte>(byteBuffer);
+                {           
+                    await socket.ReceiveAsync(bufferSegment, CancellationToken.None);
 
                     if (socket.CloseStatus.HasValue) // break immediately if the socket has been closed
                         break;
