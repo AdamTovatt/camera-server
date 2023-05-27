@@ -102,8 +102,6 @@ namespace CameraServer.Controllers
 
                     if (data.Length > 0)
                         camera.SetImage(data);
-
-                    await camera.SubmitResponse();
                 }
             }
             while (!result.CloseStatus.HasValue);

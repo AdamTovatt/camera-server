@@ -7,26 +7,18 @@ namespace CameraServer.Models
     {
         public CameraInformation Information { get { return information; } }
         public bool IsConnected { get { return socketConnection != null && !socketConnection.CloseStatus.HasValue; } }
-        public Movement QueuedMovement { get { return queuedMovement; } }
 
-        public long LastTimeOfCapture { get { return lastTimeOfCapture; } }
-
-        public delegate void ImageUpdated();
+        public delegate void ImageUpdated(object sender, ArraySegment<byte> bytes);
         public event ImageUpdated? OnImageUpdated;
 
         private CameraImage currentImage;
         private CameraInformation information;
         private WebSocket? socketConnection;
-        private byte[]? queuedData;
-        private long lastTimeOfCapture;
-
-        private Movement queuedMovement;
 
         public Camera(CameraInformation information)
         {
             this.information = information;
             currentImage = new CameraImage(new byte[0], DateTime.MinValue);
-            queuedMovement = new Movement();
         }
 
         public void SetImage(byte[] bytes)
@@ -35,15 +27,8 @@ namespace CameraServer.Models
             DateTime time = DateTime.UtcNow;
             currentImage.TimeOfCapture = time;
             information.LastActive = time;
-            lastTimeOfCapture = time.Ticks;
-        }
 
-        public async Task<byte[]> GetNextImageBytesAsync(long previousTimeOfCapture)
-        {
-            while(lastTimeOfCapture == previousTimeOfCapture)
-                await Task.Delay(30);
-
-            return currentImage.Bytes;
+            OnImageUpdated?.Invoke(this, new ArraySegment<byte>(bytes)); // invoke the OnImageUpdated event if it exists
         }
 
         public byte[] GetImageBytes()
@@ -78,48 +63,23 @@ namespace CameraServer.Models
             socketConnection = webSocket;
         }
 
-        public void QueueBytes(byte[] bytes)
-        {
-            queuedData = bytes;
-            queuedMovement.Clear();
-        }
-
-        public void Move(float newPitch, float newYaw)
-        {
-            queuedMovement.Pitch = newPitch;
-            queuedMovement.Yaw = newYaw;
-            queuedMovement.ContainsValue = true;
-        }
-
-        private async Task<bool> SendBytesAsync(byte[] bytes)
+        public async Task<bool> SendMessageToCameraClient(MessageToCameraClient message)
         {
             if (!IsConnected)
                 return false;
 
-            await socketConnection!.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Binary, true, CancellationToken.None);
+            byte[]? messageBytes = message.GetBytes();
 
+            if (messageBytes == null)
+                return false;
+
+            await socketConnection!.SendAsync(messageBytes, WebSocketMessageType.Binary, true, CancellationToken.None);
             return true;
         }
 
-        public async Task<bool> SubmitResponse()
+        public bool UserIsAllowed(string token)
         {
-            if (queuedData != null)
-            {
-                bool result = await SendBytesAsync(queuedData);
-                queuedData = null;
-                return result;
-            }
-
-            if (queuedMovement.ContainsValue)
-            {
-                queuedData = queuedMovement.GetBytes();
-                queuedMovement.Clear();
-                bool result = await SendBytesAsync(queuedData);
-                queuedData = null;
-                return result;
-            }
-
-            return await SendBytesAsync(new byte[0]);
+            return true; // needs to be implemented in a better way obviously
         }
     }
 }
