@@ -50,7 +50,7 @@ namespace CameraServer.Models
             if (information == null || information.Token == null)
                 return false;
 
-            return TokenHelper.GetToken(information.Id) == token;
+            return information.Token == token;
         }
 
         public async Task SetPreviewAsync()
