@@ -81,5 +81,18 @@ namespace CameraServer.Models
         {
             return true; // needs to be implemented in a better way obviously
         }
+
+        public async Task<bool> RequestUpdateAsync()
+        {
+            if (!IsConnected)
+            {
+                await Task.CompletedTask;
+                return false;
+            }
+
+            ArraySegment<byte> data = new ArraySegment<byte>(BitConverter.GetBytes(2)); // 2 is the message type for requesting updates
+            await socketConnection!.SendAsync(data, WebSocketMessageType.Binary, true, CancellationToken.None);
+            return true;
+        }
     }
 }

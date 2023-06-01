@@ -90,6 +90,35 @@ namespace CameraServer.Controllers
             }
         }
 
+        [HttpPost("update")]
+        public async Task<IActionResult> UpdateCamera(int cameraId)
+        {
+            try
+            {
+                if (!CameraContainer.Instance.IsInitialized)
+                    await CameraContainer.Instance.InitializeFromRepository(cameraRepository);
+
+
+                if (CameraContainer.Instance.TryGetCamera(cameraId, out Camera? camera))
+                {
+                    if (camera == null)
+                        return new ApiResponse($"Camera with id {cameraId} was null", HttpStatusCode.InternalServerError);
+
+                    bool result = await camera.RequestUpdateAsync();
+
+                    return new ApiResponse(new { result });
+                }
+                else
+                {
+                    return new ApiResponse($"No camera with id {cameraId}", HttpStatusCode.BadRequest);
+                }
+            }
+            catch (ApiException exception)
+            {
+                return new ApiResponse(exception);
+            }
+        }
+
         [HttpGet("stream-image")]
         public async Task StreamImage(int cameraId, int updateDelay = 0)
         {
